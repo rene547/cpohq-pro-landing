@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { MeshGradient } from "@paper-design/shaders-react";
+import Strands from "@/components/Strands";
 
 /* v0 highlights: three tall Stripe-anatomy cards.
    1 Community — portrait sphere ported from Knoetic-CPOHQ-Landing-Page.
@@ -257,147 +258,64 @@ function MeshOrb({ hovered }: { hovered: boolean }) {
             style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
           />
           <span className="cos-orb-shade" />
-          <span className="cos-orb-sheen" />
         </div>
       </div>
     </div>
   );
 }
 
-/* ---------- card 3: zoomed orbit quadrant, gradient orbs (2D canvas) ---------- */
+/* ---------- card 3: three Strands glass orbs (React Bits) ---------- */
 
-type OrbSpec = {
-  ring: number;
-  a0: number;
-  size: number;
-  dir: number;
-  speed: number;
-  color: [string, string, string]; // highlight, core, edge
-  ph: number;
+const STRANDS_BASE = {
+  count: 3,
+  amplitude: 1,
+  waviness: 1,
+  thickness: 0.7,
+  glow: 2.6,
+  taper: 3,
+  spread: 1,
+  intensity: 0.6,
+  saturation: 1.9,
+  opacity: 1,
+  scale: 1.5,
+  glass: true,
+  refraction: 1.7,
+  dispersion: 1,
+  hueShift: 0,
 };
 
-const ORB_COLORS: [string, string, string][] = [
-  ["#dbe7ff", "#336cf0", "#1e3fae"], // brand blue
-  ["#e9e2ff", "#7c5cf6", "#4c33b8"], // purple
-  ["#d8f7ec", "#0fbf8f", "#067a5b"], // green
-  ["#dcecff", "#4f8bff", "#2c56c4"], // light blue
-];
-
-function OrbitQuadrant({ hoverRef }: { hoverRef: React.MutableRefObject<boolean> }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+function StrandsOrbs({ hovered }: { hovered: boolean }) {
   const reduced = useReducedMotion();
+  const speed = reduced ? 0 : hovered ? 1.6 : 0.28;
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d")!;
-
-    // orbit system center sits past the bottom-right corner: the card frames
-    // the top-left quadrant of a much larger system (the "zoomed in" read)
-    const RINGS = [0.34, 0.5, 0.66, 0.82, 0.98];
-    const orbs: OrbSpec[] = [];
-    let seed = 7;
-    const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-    RINGS.forEach((_, ri) => {
-      const count = 2 + (ri % 2);
-      for (let k = 0; k < count; k++) {
-        orbs.push({
-          ring: ri,
-          a0: Math.PI + (k / count) * (Math.PI / 2) + rand() * 0.5 + ri * 0.22,
-          size: 9 + rand() * 12 + (ri < 2 ? 3 : 0),
-          dir: ri % 2 ? -1 : 1,
-          speed: 0.05 - ri * 0.007,
-          color: ORB_COLORS[(ri + k) % ORB_COLORS.length],
-          ph: rand() * Math.PI * 2,
-        });
-      }
-    });
-
-    let vis = true, t = 0, mult = 0, raf = 0;
-    let last = performance.now();
-    const io = new IntersectionObserver((e) => { vis = e[0].isIntersecting; }, { threshold: 0 });
-    io.observe(canvas);
-
-    function draw() {
-      raf = requestAnimationFrame(draw);
-      if (!vis) return;
-      const now = performance.now();
-      const dt = Math.min(0.05, (now - last) / 1000);
-      last = now;
-
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const w = canvas!.clientWidth, h = canvas!.clientHeight;
-      if (canvas!.width !== w * dpr || canvas!.height !== h * dpr) {
-        canvas!.width = w * dpr;
-        canvas!.height = h * dpr;
-      }
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, w, h);
-
-      const target = reduced ? 0 : hoverRef.current ? 4.6 : 1;
-      mult += (target - mult) * 0.05;
-      t += dt * mult;
-
-      const cx = w * 1.06, cy = h * 1.08;
-      const D = Math.hypot(w, h);
-
-      // dotted ring guides
-      ctx.lineCap = "round";
-      RINGS.forEach((rf, ri) => {
-        const R = rf * D;
-        ctx.beginPath();
-        ctx.setLineDash([0.1, 9]);
-        ctx.lineWidth = 1.6;
-        ctx.strokeStyle = `rgba(96, 118, 158, ${0.34 - ri * 0.03})`;
-        ctx.arc(cx, cy, R, Math.PI * 0.95, Math.PI * 1.55);
-        ctx.stroke();
-      });
-      ctx.setLineDash([]);
-
-      // orbs: soft halo, gradient body, specular highlight
-      for (const o of orbs) {
-        const R = RINGS[o.ring] * D;
-        const a = o.a0 + o.dir * t * o.speed;
-        const x = cx + Math.cos(a) * R;
-        const y = cy + Math.sin(a) * R;
-        if (x < -40 || y < -40 || x > w + 40 || y > h + 40) continue;
-        const s = o.size * (1 + Math.sin(t * 0.9 + o.ph) * 0.05);
-
-        let g = ctx.createRadialGradient(x, y, s * 0.4, x, y, s * 2.4);
-        g.addColorStop(0, o.color[1] + "3d");
-        g.addColorStop(1, o.color[1] + "00");
-        ctx.fillStyle = g;
-        ctx.beginPath();
-        ctx.arc(x, y, s * 2.4, 0, Math.PI * 2);
-        ctx.fill();
-
-        g = ctx.createRadialGradient(x - s * 0.32, y - s * 0.38, s * 0.08, x, y, s);
-        g.addColorStop(0, o.color[0]);
-        g.addColorStop(0.42, o.color[1]);
-        g.addColorStop(1, o.color[2]);
-        ctx.fillStyle = g;
-        ctx.beginPath();
-        ctx.arc(x, y, s, 0, Math.PI * 2);
-        ctx.fill();
-
-        g = ctx.createRadialGradient(x - s * 0.36, y - s * 0.42, 0, x - s * 0.36, y - s * 0.42, s * 0.5);
-        g.addColorStop(0, "rgba(255,255,255,0.85)");
-        g.addColorStop(1, "rgba(255,255,255,0)");
-        ctx.fillStyle = g;
-        ctx.beginPath();
-        ctx.arc(x - s * 0.36, y - s * 0.42, s * 0.5, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-    draw();
-
-    return () => {
-      cancelAnimationFrame(raf);
-      io.disconnect();
-    };
-  }, [reduced, hoverRef]);
-
-  return <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden />;
+  return (
+    <div className="absolute inset-0 flex items-center justify-center" aria-hidden>
+      <div className="size-[104px] shrink-0">
+        <Strands
+          {...STRANDS_BASE}
+          glassSize={0.85}
+          speed={speed}
+          colors={["#067a5b", "#8ff0cf", "#10b981"]}
+        />
+      </div>
+      <div className="size-[168px] shrink-0 -mx-2">
+        <Strands
+          {...STRANDS_BASE}
+          glassSize={0.72}
+          speed={speed}
+          colors={["#162ef9", "#94a3b8", "#2672ed"]}
+        />
+      </div>
+      <div className="size-[104px] shrink-0">
+        <Strands
+          {...STRANDS_BASE}
+          glassSize={0.85}
+          speed={speed}
+          colors={["#5b21b6", "#c4b5fd", "#8b5cf6"]}
+        />
+      </div>
+    </div>
+  );
 }
 
 /* ---------- section ---------- */
@@ -422,8 +340,8 @@ const CARDS = [
 
 export default function HighlightCardsV0() {
   const sphereHover = useRef(false);
-  const orbitHover = useRef(false);
   const [cosHover, setCosHover] = useState(false);
+  const [agentsHover, setAgentsHover] = useState(false);
 
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-24">
@@ -450,9 +368,9 @@ export default function HighlightCardsV0() {
           href={`#${CARDS[2].id}`}
           title={CARDS[2].title}
           line={CARDS[2].line}
-          onHover={(h) => { orbitHover.current = h; }}
+          onHover={setAgentsHover}
         >
-          <OrbitQuadrant hoverRef={orbitHover} />
+          <StrandsOrbs hovered={agentsHover} />
         </Card>
       </div>
     </section>

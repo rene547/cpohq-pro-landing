@@ -312,6 +312,7 @@ body {
     0 0 60px rgba(51, 108, 240, 0.4),
     0 0 140px rgba(51, 108, 240, 0.22);
   transition: box-shadow 0.6s ease;
+  filter: saturate(1.4);
   animation: orb-breathe 10s ease-in-out infinite;
 }
 
@@ -324,15 +325,6 @@ body {
     radial-gradient(circle at 36% 28%, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0) 40%),
     radial-gradient(circle at 50% 128%, rgba(10, 37, 64, 0.42) 0%, rgba(10, 37, 64, 0) 58%),
     radial-gradient(circle at 50% 50%, rgba(31, 63, 174, 0) 58%, rgba(31, 63, 174, 0.38) 100%);
-}
-
-.cos-orb-sheen {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: conic-gradient(from 0deg, transparent 0deg, rgba(255, 255, 255, 0.3) 40deg, transparent 110deg);
-  mix-blend-mode: screen;
-  animation: orb-spin 26s linear infinite;
 }
 
 .cos-orb-ring {
@@ -353,10 +345,6 @@ body {
   animation-duration: 4.5s;
 }
 
-.group:hover .cos-orb-sheen {
-  animation-duration: 9s;
-}
-
 .group:hover .cos-orb-ring {
   border-color: rgba(51, 108, 240, 0.5);
   animation-duration: 16s;
@@ -367,16 +355,12 @@ body {
   50% { transform: scale(1.045); }
 }
 
-@keyframes orb-spin {
-  to { transform: rotate(360deg); }
-}
-
 @keyframes orb-spin-rev {
   to { transform: rotate(-360deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cos-orb, .cos-orb-sheen, .cos-orb-ring {
+  .cos-orb, .cos-orb-ring {
     animation: none;
   }
 }
