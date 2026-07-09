@@ -22,6 +22,7 @@ import Agents from "@/components/sections/Agents";
 import Security from "@/components/sections/Security";
 import Footer from "@/components/sections/Footer";
 import JoinModal from "@/components/JoinModal";
+import JoinModalV1 from "@/components/JoinModalV1";
 import TopBarV1 from "@/components/TopBarV1";
 import VariantSwitcher from "@/components/VariantSwitcher";
 
@@ -94,7 +95,11 @@ export default function Landing({ variant }: { variant: Variant }) {
         <TalkToUsV0 onJoin={() => openJoin()} />
       )}
       <Footer />
-      <JoinModal open={modalOpen} email={email} onClose={() => setModalOpen(false)} />
+      {v1 ? (
+        <JoinModalV1 open={modalOpen} email={email} onClose={() => setModalOpen(false)} />
+      ) : (
+        <JoinModal open={modalOpen} email={email} onClose={() => setModalOpen(false)} />
+      )}
       <VariantSwitcher current={variant.id} />
     </div>
   );

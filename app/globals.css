@@ -450,3 +450,133 @@ body {
     animation: none;
   }
 }
+
+/* ---------- v1 apply form ---------- */
+
+.apply-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--line);
+  transition: background 0.3s ease;
+}
+
+.apply-dot.is-active {
+  background: var(--accent);
+}
+
+.apply-dot-line {
+  width: 22px;
+  height: 1px;
+  background: var(--line);
+  transition: background 0.3s ease;
+}
+
+.apply-dot-line.is-active {
+  background: color-mix(in srgb, var(--accent) 55%, var(--line));
+}
+
+@keyframes apply-step-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.apply-step {
+  animation: apply-step-in 0.35s cubic-bezier(0.22, 0.61, 0.2, 1);
+}
+
+.apply-pill {
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--muted);
+  border-radius: 9999px;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.82rem;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+
+.apply-pill:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  color: var(--ink);
+}
+
+.apply-pill[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.apply-pill:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.apply-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%23425466' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  padding-right: 2.4rem;
+}
+
+.apply-select.is-placeholder {
+  color: var(--muted);
+}
+
+.apply-check {
+  appearance: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: none;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--bg);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.apply-check:checked {
+  background: var(--accent)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 6.2 5 8.7l4.5-5.4' fill='none' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    center / 70% no-repeat;
+  border-color: var(--accent);
+}
+
+.apply-check:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.apply-error {
+  color: #b42318;
+  font-size: 0.78rem;
+}
+
+.modal-field.has-error {
+  border-color: #b42318;
+}
+
+.apply-success-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg));
+  color: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .apply-step {
+    animation: none;
+  }
+}
