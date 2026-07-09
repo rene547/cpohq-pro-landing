@@ -299,7 +299,7 @@ export default function JoinModalV1({ open, email, onClose }: JoinModalV1Props) 
               <div
                 ref={stepRef}
                 key={step}
-                className="apply-step flex-1 min-h-0 overflow-y-auto grid gap-4 content-start pr-2 -mr-2"
+                className="apply-step flex-1 min-h-0 overflow-y-auto grid gap-4 content-start py-1 -my-1 pl-1 -ml-1 pr-2 -mr-2"
               >
                 {step === 0 && (
                   <>
