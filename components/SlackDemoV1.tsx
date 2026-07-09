@@ -5,16 +5,16 @@ import { useEffect, useRef, useState } from "react";
 
 /** Animated Slack scene for the v1 chief-of-staff section, ported from the
  *  cpohq-site /v2 hero (HeroSlackDemo). Self-playing loop:
- *   1. a CPO types a question into the composer (centered in the empty card)
- *   2. on send, the composer slides out and the message lands at the top
+ *   1. a CPO types a question into the composer, docked at the bottom
+ *   2. on send, the composer clears and the message lands in the thread
  *   3. Chief of Staff appears below it, "thinks" (name shimmer), then answers
- *   4. the question scrolls up and out; the data tiles + reactions render
- *   5. a CPO reply types in at the bottom; the thread scrolls up, then resets
+ *   4. the data tiles + reactions render under the answer
+ *   5. the CPO types a thanks into the composer, sends it, then reset -> loop
  *  Port changes vs the source: the loop is gated on useInView because this
  *  section sits below the fold, the blues are remapped to this site's
- *  accent, and the stage is tall enough for the WHOLE thread, so the
- *  question stays pinned through the loop instead of scrolling out.
- *  Motion drives every move (AnimatePresence + layout). */
+ *  accent, the composer is a permanent fixture at the bottom (both typed
+ *  messages go through it), and the stage is tall enough for the WHOLE
+ *  thread, so nothing scrolls out. Motion drives the message moves. */
 
 const QUESTION = "@Chief of Staff what's the median Series C equity refresh, and how do we compare?";
 const REPLY = "Amazing, thank you 🙏";
@@ -80,7 +80,7 @@ export default function SlackDemoV1() {
         setPhase("reactions"); await wait(2350);
         setPhase("replyTyping"); setTyped(""); await wait(350);
         await typeInto(REPLY, 38); await wait(150); if (cancelled) break;
-        setPhase("replySent"); await wait(1450);
+        setPhase("replySent"); setTyped(""); await wait(1450);
         setPhase("reset"); await wait(700);
       }
     }
@@ -88,16 +88,13 @@ export default function SlackDemoV1() {
     return () => { cancelled = true; timers.forEach(clearTimeout); };
   }, [inView]);
 
-  const showComposer = phase === "composeQ";
   const showQ = ["sentQ", "thinking", "answer", "data", "reactions", "replyTyping", "replySent"].includes(phase);
   const showBot = ["thinking", "answer", "data", "reactions", "replyTyping", "replySent"].includes(phase);
-  const showReply = phase === "replyTyping" || phase === "replySent";
+  const showReply = phase === "replySent";
   const botAnswer = ["answer", "data", "reactions", "replyTyping", "replySent"].includes(phase);
   const botData = ["data", "reactions", "replyTyping", "replySent"].includes(phase);
   const botReactions = ["reactions", "replyTyping", "replySent"].includes(phase);
 
-  // composer centers in the empty card; once the thread starts it top-fills and stays put
-  const justify = phase === "composeQ" ? "center" : "flex-start";
   const msgT = { duration: 0.5, ease: EASE, layout: LAYOUT };
 
   return (
@@ -111,7 +108,7 @@ export default function SlackDemoV1() {
         <span className="v2-slk-ws">CPOHQ · Slack</span>
       </div>
 
-      <div className="v2-slk-stage" style={{ justifyContent: justify }}>
+      <div className="v2-slk-stage">
         <AnimatePresence mode="popLayout">
           {showQ && (
             <motion.div className="v2-slk-msg" key="q" layout initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} transition={msgT}>
@@ -176,30 +173,30 @@ export default function SlackDemoV1() {
               <CpoAvatar />
               <div className="v2-slk-mc">
                 <div className="v2-slk-meta-row"><span className="v2-slk-name">CPO</span><span className="v2-slk-time">9:43 AM</span></div>
-                <div className="v2-slk-text">
-                  {phase === "replyTyping" ? (<>{typed}<span className="v2-slk-caret" /></>) : REPLY}
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {showComposer && (
-            <motion.div className="v2-slk-composer2" key="composer" layout initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 70 }} transition={{ ...LAYOUT, opacity: { duration: 0.25 } }}>
-              <div className="v2-slk-cinput">
-                {typed ? <span className="t">{typed}</span> : <span className="ph">Message #people-leadership</span>}
-                <span className="v2-slk-caret" />
-              </div>
-              <div className="v2-slk-crow">
-                <span className="ci">{I.plus}</span>
-                <span className="ci aa">Aa</span>
-                <span className="ci">{I.smile}</span>
-                <span className="ci at">@</span>
-                <span className="ci">{I.mic}</span>
-                <span className="v2-slk-send">{I.send}</span>
+                <div className="v2-slk-text">{REPLY}</div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
+      </div>
+
+      {/* composer docked at the bottom, like the real thing; both typed
+          messages pass through it before landing in the thread */}
+      <div className="v2-slk-cwrap">
+        <div className="v2-slk-composer2">
+          <div className="v2-slk-cinput">
+            {typed ? <span className="t">{typed}</span> : <span className="ph">Message #people-leadership</span>}
+            <span className="v2-slk-caret" />
+          </div>
+          <div className="v2-slk-crow">
+            <span className="ci">{I.plus}</span>
+            <span className="ci aa">Aa</span>
+            <span className="ci">{I.smile}</span>
+            <span className="ci at">@</span>
+            <span className="ci">{I.mic}</span>
+            <span className="v2-slk-send">{I.send}</span>
+          </div>
+        </div>
       </div>
     </div>
   );

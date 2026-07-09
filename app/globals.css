@@ -490,13 +490,17 @@ body {
 .v2-slk-lock svg { width: 13px; height: 13px; }
 .v2-slk-ws { margin-left: auto; font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.04em; color: var(--ink-3); background: #fff; border: 1px solid var(--brd); border-radius: 7px; padding: 3px 8px; }
 
-/* fixed-height stage — tall enough that the entire thread (question, answer
-   with tiles and reactions, reply) stays in view while it animates; overflow
-   still clips the composer's slide-out. Source used 170px with a scrolling
+/* fixed-height stage — messages only (the composer is docked below it),
+   sized so the entire thread (question, answer with tiles and reactions,
+   reply) just fits while it animates. Source used 170px with a scrolling
    thread; this variant shows the whole conversation. */
-.v2-slk-stage { position: relative; height: 400px; padding: 10px 16px 12px; overflow: hidden;
+.v2-slk-stage { position: relative; height: 375px; padding: 10px 16px 6px; overflow: hidden;
   display: flex; flex-direction: column; justify-content: flex-start; gap: 2px; }
-@media (max-width: 560px) { .v2-slk-stage { height: 510px; } }
+@media (min-width: 1024px) { .v2-slk-stage { height: 348px; } }
+@media (max-width: 560px) { .v2-slk-stage { height: 505px; } }
+
+/* composer dock */
+.v2-slk-cwrap { padding: 4px 16px 14px; }
 .v2-slk-msg { display: flex; gap: 11px; padding: 6px 0; align-items: flex-start; }
 .v2-slk-av { width: 36px; height: 36px; border-radius: 9px; corner-shape: superellipse(1.8); flex: none; display: flex; align-items: center; justify-content: center; color: #fff; }
 .v2-slk-av svg { width: 19px; height: 19px; }
