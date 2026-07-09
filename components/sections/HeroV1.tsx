@@ -17,7 +17,7 @@ export default function HeroV1({
   const [email, setEmail] = useState("");
 
   return (
-    <section className="relative overflow-hidden">
+    <section data-hero className="relative overflow-hidden">
       <div className={`absolute inset-0 ${mirror ? "-scale-x-100" : ""}`} aria-hidden>
         <UnicornScene
           projectId="nJ0w2R0GbPeCwizm5cWx"

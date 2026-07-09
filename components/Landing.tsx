@@ -22,6 +22,7 @@ import Agents from "@/components/sections/Agents";
 import Security from "@/components/sections/Security";
 import Footer from "@/components/sections/Footer";
 import JoinModal from "@/components/JoinModal";
+import TopBarV1 from "@/components/TopBarV1";
 import VariantSwitcher from "@/components/VariantSwitcher";
 
 /* v0 is the approved, frozen baseline. v1 is a full fork (own section
@@ -48,22 +49,37 @@ export default function Landing({ variant }: { variant: Variant }) {
 
   const v1 = variant.id === "v1";
 
+  /* v1 wraps the navbar in a sticky stack with the investor top bar; the
+     navbar goes static inside it (the wrapper owns the stickiness). v0
+     renders the navbar exactly as before. */
+  const navbar = (
+    <ShellNavbar
+      className={v1 ? "static" : undefined}
+      logo={
+        <Image
+          src="/brand/cpohqlogo-horizontal-black.png"
+          alt="CPOHQ"
+          width={120}
+          height={24}
+          priority
+        />
+      }
+      links={NAV_LINKS}
+      secondaryCta={{ label: "Talk to us", href: "#" }}
+      cta={{ label: "Join CPOHQ", onClick: () => openJoin() }}
+    />
+  );
+
   return (
     <div className={`page ${variant.themeClass} flex-1`}>
-      <ShellNavbar
-        logo={
-          <Image
-            src="/brand/cpohqlogo-horizontal-black.png"
-            alt="CPOHQ"
-            width={120}
-            height={24}
-            priority
-          />
-        }
-        links={NAV_LINKS}
-        secondaryCta={{ label: "Talk to us", href: "#" }}
-        cta={{ label: "Join CPOHQ", onClick: () => openJoin() }}
-      />
+      {v1 ? (
+        <div className="sticky top-0 z-50">
+          <TopBarV1 />
+          {navbar}
+        </div>
+      ) : (
+        navbar
+      )}
       {v1 ? <HeroV1 onJoin={openJoin} /> : <HeroV0 onJoin={openJoin} />}
       {v1 ? <LogoBarV1 /> : <LogoBarV0 />}
       {v1 ? <HighlightCardsV1 /> : <HighlightCardsV0 />}

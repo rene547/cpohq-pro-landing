@@ -1,7 +1,7 @@
 # HANDOFF — CPOHQ Landing
 
 Branch: `main` (no remote configured; deploys go straight from local via Vercel CLI).
-Latest commit: `8c6142d`. Production: https://cpohq-landing.vercel.app (Vercel project `cpohq-landing`).
+Latest commit: see `git log`. Production: https://cpohq-landing.vercel.app (Vercel project `cpohq-landing`).
 
 ## Build & run
 
@@ -25,6 +25,11 @@ vercel deploy --prod --yes   # deploy (Vercel CLI, already linked)
 ## What's done
 
 Full v0 page approved and frozen: Stripe-anatomy hero with Unicorn Studio scene (blue hue-tint), hive-shell frosted navbar (1200px content, logo +20%), boxed logo grid with stepped shift + hover brand glow + one-shot sweep (ported from cpohq-site v2-redesign), three highlight cards (portrait sphere / open Strands / Outpace avatar orbs), flush-bottom masonry love wall, community glass cards over faint ASCII field, Bond-style chief-of-staff rows with black ASCII cards, Agents constellation, security, shader-backed CTA, outlined-wordmark footer.
+
+## V1 feedback applied so far (2026-07-09)
+
+- Logo grid: logos fixed in their real brand colors, no hover glow, no color sweep (`v1-logofixed` in globals.css; stepped shift kept).
+- Investor top bar above the navbar: "Backed by the world's best investors." with two angel pfps + EQT and Menlo Ventures logos (`components/TopBarV1.tsx`, assets in `public/investors/`). Sticky with the nav (Landing wraps both; ShellNavbar goes `static` via className, still unforked), collapses once the hero (`[data-hero]` on HeroV1) scrolls out of view. Firm logos hide below `sm`. Second angel headshot is unidentified (client-supplied screenshot) -- alt left decorative.
 
 ## What's next
 

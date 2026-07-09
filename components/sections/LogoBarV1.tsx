@@ -3,19 +3,19 @@
 import { useEffect, useRef, useState } from "react";
 import { logoBar } from "@/lib/content-v1";
 
-/* v0 logo bar: boxed grid ported from cpohq-site v2-redesign (v3-credgrid) --
-   grayscale cells, per-logo radial brand glow on hover, one-shot color sweep
-   when the grid crosses the 55% viewport line. Instead of a marquee, each row
-   does a single quick one-cell shift every few seconds (top right, bottom
-   left) and then rests, so it doesn't fight the animated hero. */
+/* v1 logo bar: boxed grid forked from v0. Client feedback 2026-07-09: logos
+   render in their real brand colors at rest (no grayscale, no hover glow, no
+   color sweep). The stepped row shift stays: each row does a single quick
+   one-cell shift every few seconds (top right, bottom left) and then rests,
+   so it doesn't fight the animated hero. */
 
 const VISIBLE = 8;
 const STEP_MS = 3000;
 const ACCENT = "#336CF0";
 
 /* [name, file, brand color] -- strongest names front-loaded so the first
-   visible window reads as the A-team. Unknown brand colors fall back to
-   CPOHQ blue (hover still reveals the logo's true colors). */
+   visible window reads as the A-team. Brand colors are kept for reference
+   but unused in v1 (logos render fixed in their real colors). */
 const ROW_A: [string, string, string][] = [
   ["OpenAI", "OpenAI.svg", "#111111"],
   ["Anthropic", "Anthropic.svg", "#D97757"],
@@ -164,10 +164,9 @@ function SteppedRow({
   );
 }
 
-export default function LogoBarV1({ colored = false }: { colored?: boolean }) {
+export default function LogoBarV1() {
   const reduced = useReducedMotion();
   const [tick, setTick] = useState(0);
-  const gridRef = useRef<HTMLDivElement>(null);
 
   /* one quick shift every few seconds, resting in between */
   useEffect(() => {
@@ -176,34 +175,11 @@ export default function LogoBarV1({ colored = false }: { colored?: boolean }) {
     return () => clearInterval(id);
   }, [reduced]);
 
-  /* one-shot color sweep when the grid crosses the 55% viewport line
-     (ported from cpohq-site ScrollReveal) */
-  useEffect(() => {
-    const el = gridRef.current;
-    if (!el || colored) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add("swept");
-            io.unobserve(e.target);
-          }
-        });
-      },
-      { rootMargin: "0px 0px -45% 0px", threshold: 0 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, [colored]);
-
   return (
     <section className="py-14">
       <div className="mx-auto max-w-[1200px] px-6">
         <p className="text-center text-sm text-muted mb-8">{logoBar.line}</p>
-        <div
-          ref={gridRef}
-          className={`v0-logogrid ${colored ? "v0-colored" : ""} rounded-2xl border border-line overflow-hidden divide-y divide-line`}
-        >
+        <div className="v0-logogrid v1-logofixed rounded-2xl border border-line overflow-hidden divide-y divide-line">
           <SteppedRow items={ROW_A} reverse tick={tick} sweepBase={0.35} />
           <SteppedRow items={ROW_B} reverse={false} tick={tick} sweepBase={0.55} />
         </div>

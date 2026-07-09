@@ -303,6 +303,17 @@ body {
   }
 }
 
+/* v1: logos fixed in their real brand colors -- no grayscale, no hover glow */
+.v1-logofixed .v0-logocell img {
+  filter: none;
+  opacity: 1;
+  transition: none;
+}
+
+.v1-logofixed .v0-logocell::before {
+  display: none;
+}
+
 /* ---------- Outpace avatar orbs (v0 agents card) ---------- */
 
 .avatar-orb {
