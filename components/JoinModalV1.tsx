@@ -48,8 +48,10 @@ function toggleOption(list: string[], value: string): string[] {
 }
 
 /* V1 fork of JoinModal: the full cpohq.com application form as a 3-step
-   modal. Submit collects the payload only; network wiring is the next
-   phase and the payload shape is final. */
+   modal on the brand near-black (#0b0d12, same as the investor bar and the
+   featured love wall card). The panel keeps one fixed size across steps so
+   nothing jumps on Continue. Submit collects the payload only; network
+   wiring is the next phase and the payload shape is final. */
 export default function JoinModalV1({ open, email, onClose }: JoinModalV1Props) {
   const stepRef = useRef<HTMLDivElement>(null);
   const [step, setStep] = useState(0);
@@ -136,6 +138,14 @@ export default function JoinModalV1({ open, email, onClose }: JoinModalV1Props) 
     }
   };
 
+  /* Every field in the form is required; the asterisk marks it like the
+     original cpohq.com form did. */
+  const req = (
+    <span className="apply-req" aria-hidden>
+      *
+    </span>
+  );
+
   const field = (
     key: keyof FormState,
     label: string,
@@ -144,6 +154,7 @@ export default function JoinModalV1({ open, email, onClose }: JoinModalV1Props) 
     <div>
       <label htmlFor={`apply-${key}`} className="block text-sm font-medium">
         {label}
+        {req}
       </label>
       <input
         id={`apply-${key}`}
@@ -151,6 +162,7 @@ export default function JoinModalV1({ open, email, onClose }: JoinModalV1Props) 
         value={form[key] as string}
         onChange={(e) => set(key, e.target.value as FormState[typeof key])}
         aria-invalid={Boolean(errors[key])}
+        aria-required
         {...props}
       />
       {errors[key] && <p className="apply-error mt-1">{errors[key]}</p>}
@@ -161,6 +173,7 @@ export default function JoinModalV1({ open, email, onClose }: JoinModalV1Props) 
     <div>
       <label htmlFor={`apply-${key}`} className="block text-sm font-medium">
         {label}
+        {req}
       </label>
       <select
         id={`apply-${key}`}
@@ -168,6 +181,7 @@ export default function JoinModalV1({ open, email, onClose }: JoinModalV1Props) 
         value={form[key]}
         onChange={(e) => set(key, e.target.value)}
         aria-invalid={Boolean(errors[key])}
+        aria-required
       >
         <option value="" disabled>
           {applyForm.selectPlaceholder}
@@ -184,8 +198,11 @@ export default function JoinModalV1({ open, email, onClose }: JoinModalV1Props) 
 
   const pills = (key: "hris" | "ats", label: string, options: string[]) => (
     <div>
-      <span className="block text-sm font-medium">{label}</span>
-      <span className="block text-xs text-muted mt-0.5">{applyForm.multiHint}</span>
+      <span className="block text-sm font-medium">
+        {label}
+        {req}
+      </span>
+      <span className="block text-xs text-white/45 mt-0.5">{applyForm.multiHint}</span>
       <div className="mt-2.5 flex flex-wrap gap-2" role="group" aria-label={label}>
         {options.map((o) => (
           <button
@@ -215,9 +232,9 @@ export default function JoinModalV1({ open, email, onClose }: JoinModalV1Props) 
         onClick={handleClose}
         className="absolute inset-0 bg-black/40 backdrop-blur-[2px] cursor-default"
       />
-      <div className="relative w-full max-w-lg max-h-[calc(100vh-2rem)] overflow-y-auto bg-card text-ink rounded-brand border border-line shadow-2xl p-8">
+      <div className="apply-dark relative w-full max-w-lg h-[min(760px,calc(100dvh-2rem))] flex flex-col bg-[#0b0d12] text-white rounded-brand border border-white/10 shadow-2xl p-8">
         {submitted ? (
-          <div className="apply-step text-center py-6">
+          <div className="apply-step flex-1 flex flex-col items-center justify-center text-center">
             <span className="apply-success-mark" aria-hidden>
               <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
                 <path
@@ -232,7 +249,7 @@ export default function JoinModalV1({ open, email, onClose }: JoinModalV1Props) 
             <h3 className="mt-4 font-display text-2xl leading-tight">
               {applyForm.success.title}
             </h3>
-            <p className="mt-2 text-sm text-muted max-w-sm mx-auto">
+            <p className="mt-2 text-sm text-white/55 max-w-sm mx-auto">
               {applyForm.success.line}
             </p>
             <button
@@ -244,17 +261,17 @@ export default function JoinModalV1({ open, email, onClose }: JoinModalV1Props) 
           </div>
         ) : (
           <>
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start justify-between gap-4 shrink-0">
               <div>
                 <h3 className="font-display text-2xl leading-tight">
                   {applyForm.title}
                 </h3>
-                <p className="mt-2 text-sm text-muted">{applyForm.sub}</p>
+                <p className="mt-2 text-sm text-white/55">{applyForm.sub}</p>
               </div>
               <button
                 onClick={handleClose}
                 aria-label="Close dialog"
-                className="shrink-0 rounded-full border border-line w-8 h-8 flex items-center justify-center text-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-accent"
+                className="shrink-0 rounded-full border border-white/15 w-8 h-8 flex items-center justify-center text-white/60 hover:text-white focus-visible:outline-2 focus-visible:outline-accent"
               >
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
                   <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="1.5" />
@@ -262,7 +279,7 @@ export default function JoinModalV1({ open, email, onClose }: JoinModalV1Props) 
               </button>
             </div>
 
-            <div className="mt-6 flex items-center gap-3">
+            <div className="mt-6 flex items-center gap-3 shrink-0">
               <div className="flex items-center gap-1.5" aria-hidden>
                 {applyForm.steps.map((s, i) => (
                   <Fragment key={s.id}>
@@ -273,13 +290,17 @@ export default function JoinModalV1({ open, email, onClose }: JoinModalV1Props) 
                   </Fragment>
                 ))}
               </div>
-              <p className="text-xs text-muted">
+              <p className="text-xs text-white/50">
                 Step {step + 1} of {applyForm.steps.length}: {applyForm.steps[step].label}
               </p>
             </div>
 
-            <form className="mt-5" onSubmit={handleSubmit} noValidate>
-              <div ref={stepRef} key={step} className="apply-step grid gap-4">
+            <form className="mt-5 flex-1 min-h-0 flex flex-col" onSubmit={handleSubmit} noValidate>
+              <div
+                ref={stepRef}
+                key={step}
+                className="apply-step flex-1 min-h-0 overflow-y-auto grid gap-4 content-start pr-2 -mr-2"
+              >
                 {step === 0 && (
                   <>
                     <div className="grid grid-cols-2 gap-3">
@@ -323,13 +344,13 @@ export default function JoinModalV1({ open, email, onClose }: JoinModalV1Props) 
                   <>
                     {pills("hris", applyForm.fields.hris, applyForm.hrisOptions)}
                     {pills("ats", applyForm.fields.ats, applyForm.atsOptions)}
-                    <p className="text-xs text-muted">
+                    <p className="text-xs text-white/50">
                       {applyForm.consent.before}
-                      <a href={applyForm.consent.privacyHref} className="underline underline-offset-2 hover:text-ink">
+                      <a href={applyForm.consent.privacyHref} className="underline underline-offset-2 hover:text-white">
                         {applyForm.consent.privacyLabel}
                       </a>
                       {applyForm.consent.between}
-                      <a href={applyForm.consent.termsHref} className="underline underline-offset-2 hover:text-ink">
+                      <a href={applyForm.consent.termsHref} className="underline underline-offset-2 hover:text-white">
                         {applyForm.consent.termsLabel}
                       </a>
                       {applyForm.consent.after}
@@ -338,7 +359,7 @@ export default function JoinModalV1({ open, email, onClose }: JoinModalV1Props) 
                 )}
               </div>
 
-              <div className="mt-6 flex items-center justify-between gap-3">
+              <div className="mt-5 flex items-center justify-between gap-3 shrink-0">
                 {step > 0 ? (
                   <button
                     type="button"
@@ -346,7 +367,7 @@ export default function JoinModalV1({ open, email, onClose }: JoinModalV1Props) 
                       setErrors({});
                       setStep(step - 1);
                     }}
-                    className="text-sm text-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-accent rounded-full px-2 py-1"
+                    className="text-sm text-white/55 hover:text-white focus-visible:outline-2 focus-visible:outline-accent rounded-full px-2 py-1"
                   >
                     {applyForm.back}
                   </button>

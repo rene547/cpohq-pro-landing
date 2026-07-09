@@ -580,3 +580,101 @@ body {
     animation: none;
   }
 }
+
+/* Dark treatment: the modal panel sits on the brand near-black (#0b0d12),
+   so the form primitives swap to their dark counterparts here. */
+
+.apply-req {
+  color: #7c9df5;
+  margin-left: 3px;
+}
+
+.apply-dark .modal-field {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #f6f9fc;
+}
+
+.apply-dark .modal-field::placeholder {
+  color: rgba(246, 249, 252, 0.38);
+}
+
+.apply-dark .modal-field:focus {
+  border-color: transparent;
+}
+
+.apply-dark .apply-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%238ba1b8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.apply-dark .apply-select.is-placeholder {
+  color: rgba(246, 249, 252, 0.38);
+}
+
+/* native dropdown list inherits the dark panel */
+.apply-dark .apply-select option {
+  background: #0b0d12;
+  color: #f6f9fc;
+}
+
+.apply-dark .apply-pill {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.16);
+  color: rgba(246, 249, 252, 0.72);
+}
+
+.apply-dark .apply-pill:hover {
+  border-color: rgba(124, 157, 245, 0.6);
+  color: #ffffff;
+}
+
+.apply-dark .apply-pill[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.apply-dark .apply-check {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.apply-dark .apply-check:checked {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+
+.apply-dark .apply-dot {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.apply-dark .apply-dot.is-active {
+  background: var(--accent);
+}
+
+.apply-dark .apply-dot-line {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.apply-dark .apply-dot-line.is-active {
+  background: rgba(51, 108, 240, 0.65);
+}
+
+.apply-dark .apply-error {
+  color: #f97066;
+}
+
+.apply-dark .modal-field.has-error {
+  border-color: #f97066;
+}
+
+.apply-dark .apply-success-mark {
+  background: rgba(51, 108, 240, 0.18);
+  color: #8db0ff;
+}
+
+/* thin dark scrollbar for the step area */
+.apply-dark .apply-step {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
