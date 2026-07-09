@@ -5,18 +5,18 @@ export type Logo = { name: string; file: string };
 export const logos: Logo[] = logosJson as Logo[];
 
 export const hero = {
-  headline: "The #1 platform giving 3,000+ Chief People Officers and their teams AI superpowers.",
+  headline: "The #1 platform giving 3,000+ Chief People Officers AI superpowers.",
   // Alternate for Joseph to react to; shown in some variants.
   headlineAlt: "AI superpowers for the world's best people leaders.",
-  sub: "The private community where the world's best people leaders build AI-native companies.",
+  sub: "A curated community of world-class people leaders, an AI Chief of Staff just for CPOs, and a team of AI agents for your people org. One platform.",
   emailPlaceholder: "Work email",
-  cta: "Join",
-  microcopy: "Membership is CPO-only.",
+  cta: "Join CPOHQ",
+  microcopy: "One member per company. Senior-most People or HR executive only.",
   stat: 3000,
 };
 
 export const investorBanner = {
-  line: "Backed by the world's best investors.",
+  line: "$55 million from the world's top investors (Adam Grant, Accel, +100 more).",
 };
 
 export const logoBar = {

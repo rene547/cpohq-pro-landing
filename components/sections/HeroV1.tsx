@@ -36,7 +36,6 @@ export default function HeroV1({
         <Reveal className="py-20">
           <h1 className="max-w-3xl font-display text-4xl md:text-[3.4rem] leading-[1.08] tracking-tight">
             The #1 platform giving 3,000+ Chief People Officers{" "}
-            <span className="text-muted">(&amp; now their HR teams)</span>{" "}
             <span className="text-super">AI superpowers.</span>
           </h1>
           <p className="mt-6 text-lg text-muted max-w-xl">{hero.sub}</p>

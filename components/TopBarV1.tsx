@@ -6,9 +6,9 @@ import { investorBanner } from "@/lib/content-v1";
    collapsed after the hero). All firm logos render white on the brand blue. */
 
 const FIRMS: { name: string; file: string; height: string }[] = [
+  { name: "Accel", file: "accel-white.svg", height: "h-3.5" },
   { name: "EQT", file: "eqt-white.svg", height: "h-[13px]" },
   { name: "Menlo Ventures", file: "menlo-ventures-white.svg", height: "h-4" },
-  { name: "Accel", file: "accel-white.svg", height: "h-3.5" },
 ];
 
 const ANGELS = [
@@ -37,7 +37,7 @@ export default function TopBarV1() {
             />
           ))}
         </div>
-        <p className="whitespace-nowrap text-xs text-white/85 sm:text-sm">
+        <p className="min-w-0 truncate text-xs text-white/85 sm:text-sm">
           {investorBanner.line}
         </p>
         <span className="hidden h-4 w-px bg-white/25 sm:block" aria-hidden />
@@ -51,7 +51,6 @@ export default function TopBarV1() {
               className={`${f.height} w-auto`}
             />
           ))}
-          <span className="text-xs text-white/70">+ 100s more</span>
         </div>
       </div>
     </div>

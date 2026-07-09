@@ -39,6 +39,15 @@ const NAV_LINKS = [
   { label: "Careers", href: "#" },
 ];
 
+/* v1 nav per copy doc 2026-07-09: renamed community link, no secondary CTA,
+   member-count CTA label. v0 keeps NAV_LINKS above. */
+const NAV_LINKS_V1 = [
+  { label: "CPOHQ Community", href: "#community" },
+  { label: "AI Chief of Staff", href: "#chief-of-staff" },
+  { label: "AI Agents", href: "#agents" },
+  { label: "Careers", href: "#" },
+];
+
 export default function Landing({ variant }: { variant: Variant }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [email, setEmail] = useState("");
@@ -65,9 +74,9 @@ export default function Landing({ variant }: { variant: Variant }) {
           priority
         />
       }
-      links={NAV_LINKS}
-      secondaryCta={{ label: "Talk to us", href: "#" }}
-      cta={{ label: "Join CPOHQ", onClick: () => openJoin() }}
+      links={v1 ? NAV_LINKS_V1 : NAV_LINKS}
+      secondaryCta={v1 ? undefined : { label: "Talk to us", href: "#" }}
+      cta={{ label: v1 ? "Join 3,000+ CPOs" : "Join CPOHQ", onClick: () => openJoin() }}
     />
   );
 
