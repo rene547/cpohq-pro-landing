@@ -1,6 +1,7 @@
 # HANDOFF — CPOHQ Landing
 
-Branch: `main` (no remote configured; deploys go straight from local via Vercel CLI).
+Branch: `main`. Remote: https://github.com/rene547/cpohq-pro-landing (public).
+Deploys are NOT wired to GitHub -- they go from a local checkout via Vercel CLI.
 Latest commit: see `git log`. Production: https://cpohq-landing.vercel.app (Vercel project `cpohq-landing`).
 
 ## Build & run
