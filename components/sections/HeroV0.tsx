@@ -23,6 +23,7 @@ export default function HeroV0({ onJoin }: { onJoin: (email: string) => void }) 
           ariaLabel=""
           altText=""
         />
+        <div className="unicorn-tint" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-6xl px-6 pt-24 pb-32 md:pt-32 md:pb-40">

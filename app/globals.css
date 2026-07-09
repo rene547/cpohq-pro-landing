@@ -21,7 +21,8 @@
 
 /* ---------- Variant themes ---------- */
 
-/* v0: the working direction. Cloned from v2 so it can diverge freely. */
+/* v0: the working direction. Cloned from v2 so it can diverge freely.
+   Brand blue: #336CF0 (Knoetic/CPOHQ). */
 .theme-v0 {
   --bg: #ffffff;
   --ink: #0a2540;
@@ -29,7 +30,7 @@
   --line: #e6ebf1;
   --card: #f6f9fc;
   --soft: #f6f9fc;
-  --accent: #3d53f5;
+  --accent: #336cf0;
   --accent-ink: #ffffff;
   --dark: #0a2540;
   --dark-ink: #f6f9fc;
@@ -219,10 +220,24 @@ body {
 /* ---------- Headline accent (v0) ---------- */
 
 .text-super {
-  background: linear-gradient(92deg, #4f66f0 0%, #8b5cf6 55%, #c95ef0 100%);
+  background: linear-gradient(92deg, #336cf0 0%, #4f8bff 55%, #7c6ef8 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* Blue tint over the Unicorn scene: mix-blend-mode color remaps hue toward
+   brand blue while the scene's own luminance/dither texture shows through.
+   (The scene also carries its own internal blend mode; this sits on top.) */
+.unicorn-tint {
+  position: absolute;
+  inset: 0;
+  background: #336cf0;
+  /* hue (not color): shifts saturated pixels toward brand blue but leaves
+     the white field untouched, so the hero stays crisp against the page */
+  mix-blend-mode: hue;
+  opacity: 0.85;
+  pointer-events: none;
 }
 
 /* ---------- Ribbon (v0 hero artwork) ---------- */
