@@ -4,7 +4,7 @@ import Reveal from "@/components/Reveal";
 export default function Security() {
   return (
     <section className="bg-soft border-y border-line">
-      <div className="mx-auto max-w-6xl px-6 py-20">
+      <div className="mx-auto max-w-6xl px-6 py-24">
         <Reveal>
           <h2 className="font-display text-3xl md:text-4xl tracking-tight text-center max-w-2xl mx-auto">
             {security.headline}

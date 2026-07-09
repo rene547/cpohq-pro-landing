@@ -26,7 +26,7 @@ const glyphs: Record<string, React.ReactNode> = {
 
 export default function Highlights() {
   return (
-    <section className="mx-auto max-w-6xl px-6 py-20">
+    <section className="mx-auto max-w-6xl px-6 py-24">
       <Reveal staggerChildren={0.12} className="grid gap-4 md:grid-cols-3">
         {highlights.map((h) => (
           <a

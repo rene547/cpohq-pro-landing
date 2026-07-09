@@ -43,7 +43,7 @@ export default function ChiefOfStaff({ variant }: { variant: Variant }) {
       ref={ref}
       className={`scroll-mt-16 ${dark ? "bg-dark text-dark-ink" : "bg-soft border-y border-line"}`}
     >
-      <div className="mx-auto max-w-6xl px-6 py-24">
+      <div className="mx-auto max-w-6xl px-6 py-28">
         <div className="max-w-2xl">
           <h2 className="font-display text-3xl md:text-5xl tracking-tight">
             {chiefOfStaff.headline}

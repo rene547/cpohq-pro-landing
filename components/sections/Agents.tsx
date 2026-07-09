@@ -4,7 +4,7 @@ import Reveal from "@/components/Reveal";
 /* Constellation lives here (Joseph: liked it, but not in the hero). */
 export default function Agents() {
   return (
-    <section id={agents.id} className="mx-auto max-w-6xl px-6 py-24 scroll-mt-16">
+    <section id={agents.id} className="mx-auto max-w-6xl px-6 py-28 scroll-mt-16">
       <div className="grid md:grid-cols-2 gap-14 items-center">
         <Reveal className="order-2 md:order-1">
           <Constellation />

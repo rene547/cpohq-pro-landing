@@ -374,7 +374,7 @@ export default function HighlightCardsV0() {
   const [agentsHover, setAgentsHover] = useState(false);
 
   return (
-    <section className="mx-auto max-w-[1200px] px-6 py-24">
+    <section className="mx-auto max-w-[1200px] px-6 py-28">
       <div className="grid gap-5 md:grid-cols-3">
         <Card
           href={`#${CARDS[0].id}`}

@@ -13,6 +13,7 @@ import HighlightCardsV0 from "@/components/sections/HighlightCardsV0";
 import LoveWall from "@/components/sections/LoveWall";
 import LoveWallV0 from "@/components/sections/LoveWallV0";
 import Community from "@/components/sections/Community";
+import CommunityV0 from "@/components/sections/CommunityV0";
 import ChiefOfStaff from "@/components/sections/ChiefOfStaff";
 import Agents from "@/components/sections/Agents";
 import Security from "@/components/sections/Security";
@@ -66,7 +67,7 @@ export default function Landing({ variant }: { variant: Variant }) {
       <LogoBar variant={variant} />
       {variant.id === "v0" ? <HighlightCardsV0 /> : <Highlights />}
       {variant.id === "v0" ? <LoveWallV0 /> : <LoveWall />}
-      <Community />
+      {variant.id === "v0" ? <CommunityV0 /> : <Community />}
       <ChiefOfStaff variant={variant} />
       <Agents />
       <Security />

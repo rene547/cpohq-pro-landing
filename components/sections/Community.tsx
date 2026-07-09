@@ -4,7 +4,7 @@ import Reveal from "@/components/Reveal";
 /* Pylon-style split: narrative left, artifact stack right. */
 export default function Community() {
   return (
-    <section id={community.id} className="mx-auto max-w-6xl px-6 py-24 scroll-mt-16">
+    <section id={community.id} className="mx-auto max-w-6xl px-6 py-28 scroll-mt-16">
       <div className="grid md:grid-cols-2 gap-14 items-center">
         <Reveal>
           <h2 className="font-display text-3xl md:text-5xl tracking-tight">

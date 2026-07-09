@@ -36,7 +36,7 @@ const cardShadow =
 export default function LoveWallV0() {
   return (
     <section className="bg-soft border-y border-line">
-      <div className="mx-auto max-w-[1200px] px-6 py-24">
+      <div className="mx-auto max-w-[1200px] px-6 py-28">
         <Reveal>
           <h2 className="font-display text-3xl md:text-5xl tracking-tight text-center">
             {loveWall.headline}

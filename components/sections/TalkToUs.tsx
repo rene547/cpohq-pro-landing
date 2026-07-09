@@ -5,7 +5,7 @@ import Reveal from "@/components/Reveal";
 
 export default function TalkToUs({ onJoin }: { onJoin: () => void }) {
   return (
-    <section className="mx-auto max-w-6xl px-6 py-24">
+    <section className="mx-auto max-w-6xl px-6 py-28">
       <Reveal>
         <div className="rounded-brand border border-line bg-card px-8 py-16 text-center shadow-sm">
           <h2 className="font-display text-3xl md:text-5xl tracking-tight max-w-2xl mx-auto">
