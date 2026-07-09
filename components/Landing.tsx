@@ -19,6 +19,7 @@ import CommunityV1 from "@/components/sections/CommunityV1";
 import ChiefOfStaffV1 from "@/components/sections/ChiefOfStaffV1";
 import TalkToUsV1 from "@/components/sections/TalkToUsV1";
 import Agents from "@/components/sections/Agents";
+import AgentsV1 from "@/components/sections/AgentsV1";
 import Security from "@/components/sections/Security";
 import Footer from "@/components/sections/Footer";
 import JoinModal from "@/components/JoinModal";
@@ -86,7 +87,7 @@ export default function Landing({ variant }: { variant: Variant }) {
       {v1 ? <LoveWallV1 /> : <LoveWallV0 />}
       {v1 ? <CommunityV1 /> : <CommunityV0 />}
       {v1 ? <ChiefOfStaffV1 /> : <ChiefOfStaffV0 />}
-      <Agents />
+      {v1 ? <AgentsV1 /> : <Agents />}
       <Security />
       {v1 ? (
         <TalkToUsV1 onJoin={() => openJoin()} />
