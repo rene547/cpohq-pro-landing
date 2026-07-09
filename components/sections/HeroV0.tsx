@@ -26,8 +26,8 @@ export default function HeroV0({ onJoin }: { onJoin: (email: string) => void }) 
         <div className="unicorn-tint" />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-6xl px-6 pt-24 pb-32 md:pt-32 md:pb-40">
-        <Reveal>
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-6 flex items-center min-h-[65vh]">
+        <Reveal className="py-20">
           <h1 className="max-w-3xl font-display text-4xl md:text-[3.4rem] leading-[1.08] tracking-tight">
             The #1 platform giving 3,000+ Chief People Officers{" "}
             <span className="text-muted">(&amp; now their HR teams)</span>{" "}

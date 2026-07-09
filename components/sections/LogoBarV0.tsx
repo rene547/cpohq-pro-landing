@@ -197,7 +197,7 @@ export default function LogoBarV0() {
   }, []);
 
   return (
-    <section className="py-14 border-b border-line">
+    <section className="py-14">
       <div className="mx-auto max-w-[1200px] px-6">
         <p className="text-center text-sm text-muted mb-8">{logoBar.line}</p>
         <div

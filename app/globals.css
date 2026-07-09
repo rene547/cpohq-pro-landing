@@ -370,6 +370,46 @@ body {
   }
 }
 
+/* ---------- Outpace avatar orbs (v0 agents card) ---------- */
+
+.avatar-orb {
+  position: relative;
+  border-radius: 9999px;
+  --orb-glow-a: rgba(51, 108, 240, 0.35);
+  --orb-glow-b: rgba(51, 108, 240, 0.18);
+  box-shadow:
+    0 0 50px var(--orb-glow-a),
+    0 0 120px var(--orb-glow-b);
+  transition: box-shadow 0.6s ease;
+  animation: orb-breathe 11s ease-in-out infinite;
+}
+
+.avatar-orb-spin {
+  border-radius: inherit;
+  overflow: hidden;
+  line-height: 0;
+  animation: orb-spin-rev 70s linear infinite;
+}
+
+.group:hover .avatar-orb {
+  box-shadow:
+    0 0 80px var(--orb-glow-a),
+    0 0 80px var(--orb-glow-a),
+    0 0 180px var(--orb-glow-b);
+  animation-duration: 5s;
+}
+
+.group:hover .avatar-orb-spin {
+  animation-duration: 18s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .avatar-orb,
+  .avatar-orb-spin {
+    animation: none;
+  }
+}
+
 /* ---------- Chief-of-staff orb (v0 highlight card) ---------- */
 
 .cos-orb {

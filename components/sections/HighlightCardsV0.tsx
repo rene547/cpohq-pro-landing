@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { MeshGradient } from "@paper-design/shaders-react";
+import { GradientAvatar } from "@outpacelabs/avatars";
 import Strands from "@/components/Strands";
 
 /* v0 highlights: three tall Stripe-anatomy cards.
@@ -72,7 +72,7 @@ function Card({
       href={href}
       onMouseEnter={() => onHover?.(true)}
       onMouseLeave={() => onHover?.(false)}
-      className="group relative flex flex-col overflow-hidden rounded-brand border border-line bg-soft min-h-[540px] transition hover:shadow-xl focus-visible:outline-2 focus-visible:outline-accent"
+      className="group relative flex flex-col overflow-hidden rounded-brand border border-line bg-[#f2f2f0] min-h-[540px] transition hover:shadow-xl focus-visible:outline-2 focus-visible:outline-accent"
     >
       <div className="relative z-10 flex items-start justify-between gap-4 p-7 pb-0">
         <div>
@@ -258,7 +258,7 @@ function StrandsFlow({ hovered }: { hovered: boolean }) {
         intensity={0.6}
         saturation={1.5}
         opacity={1}
-        scale={1.5}
+        scale={0.95}
         glass={false}
         refraction={1}
         dispersion={1}
@@ -270,80 +270,59 @@ function StrandsFlow({ hovered }: { hovered: boolean }) {
   );
 }
 
-/* ---------- card 3: mesh-shader orb trio (blue center, green + purple) ---------- */
+/* ---------- card 3: Outpace gradient-avatar orbs ----------
+   The site gallery numbers (041/139/167) are random per session past item 30,
+   so those exact seeds are unrecoverable. These were found instead by scanning
+   generatePalette() for the target hues -- blue (main, near brand #336CF0),
+   purple, green. The avatars are static canvases; motion comes from a slow
+   CSS spin + breathe on the wrapper, which reads as the gradient drifting. */
 
-type OrbPalette = {
-  colors: string[];
-  glowA: string;
-  glowB: string;
+const ORBS = {
+  main: { seed: "k76760", glowA: "rgba(51, 108, 240, 0.35)", glowB: "rgba(51, 108, 240, 0.18)" },
+  purple: { seed: "cpo26093", glowA: "rgba(139, 92, 246, 0.35)", glowB: "rgba(139, 92, 246, 0.18)" },
+  green: { seed: "cpo18614", glowA: "rgba(16, 185, 129, 0.35)", glowB: "rgba(16, 185, 129, 0.18)" },
 };
 
-const ORB_PALETTES: Record<string, OrbPalette> = {
-  blue: {
-    colors: ["#336CF0", "#2C56C4", "#D5E3FF", "#4F8BFF"],
-    glowA: "rgba(51, 108, 240, 0.4)",
-    glowB: "rgba(51, 108, 240, 0.22)",
-  },
-  green: {
-    colors: ["#0FBF8F", "#067A5B", "#D9F7EC", "#2BD9A8"],
-    glowA: "rgba(16, 185, 129, 0.38)",
-    glowB: "rgba(16, 185, 129, 0.2)",
-  },
-  purple: {
-    colors: ["#8B5CF6", "#5B21B6", "#EAE2FF", "#A78BFA"],
-    glowA: "rgba(139, 92, 246, 0.38)",
-    glowB: "rgba(139, 92, 246, 0.2)",
-  },
-};
-
-function ShaderOrb({
-  palette,
+function AvatarOrb({
+  orb,
   size,
-  hovered,
   ring = false,
   delay = 0,
 }: {
-  palette: OrbPalette;
+  orb: (typeof ORBS)[keyof typeof ORBS];
   size: number;
-  hovered: boolean;
   ring?: boolean;
   delay?: number;
 }) {
-  const reduced = useReducedMotion();
   return (
     <div className="relative shrink-0">
       {ring && <span className="cos-orb-ring" />}
       <div
-        className="cos-orb"
+        className="avatar-orb"
         style={
           {
             width: size,
             height: size,
             animationDelay: `${delay}s`,
-            "--orb-glow-a": palette.glowA,
-            "--orb-glow-b": palette.glowB,
+            "--orb-glow-a": orb.glowA,
+            "--orb-glow-b": orb.glowB,
           } as React.CSSProperties
         }
       >
-        <MeshGradient
-          colors={palette.colors}
-          distortion={0.8}
-          swirl={0.1}
-          speed={reduced ? 0 : hovered ? 1.4 : 0.45}
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
-        />
-        <span className="cos-orb-shade" />
+        <div className="avatar-orb-spin" style={{ animationDelay: `${delay}s` }}>
+          <GradientAvatar seed={orb.seed} size={size} />
+        </div>
       </div>
     </div>
   );
 }
 
-function OrbTrio({ hovered }: { hovered: boolean }) {
+function OrbTrio() {
   return (
-    <div className="absolute inset-0 flex items-center justify-center gap-5" aria-hidden>
-      <ShaderOrb palette={ORB_PALETTES.green} size={88} hovered={hovered} delay={-3} />
-      <ShaderOrb palette={ORB_PALETTES.blue} size={150} hovered={hovered} ring />
-      <ShaderOrb palette={ORB_PALETTES.purple} size={88} hovered={hovered} delay={-6} />
+    <div className="absolute inset-0 flex items-center justify-center gap-4" aria-hidden>
+      <AvatarOrb orb={ORBS.green} size={80} delay={-3} />
+      <AvatarOrb orb={ORBS.main} size={148} ring />
+      <AvatarOrb orb={ORBS.purple} size={80} delay={-6} />
     </div>
   );
 }
@@ -371,7 +350,6 @@ const CARDS = [
 export default function HighlightCardsV0() {
   const sphereHover = useRef(false);
   const [cosHover, setCosHover] = useState(false);
-  const [agentsHover, setAgentsHover] = useState(false);
 
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-28">
@@ -394,13 +372,8 @@ export default function HighlightCardsV0() {
           <StrandsFlow hovered={cosHover} />
         </Card>
 
-        <Card
-          href={`#${CARDS[2].id}`}
-          title={CARDS[2].title}
-          line={CARDS[2].line}
-          onHover={setAgentsHover}
-        >
-          <OrbTrio hovered={agentsHover} />
+        <Card href={`#${CARDS[2].id}`} title={CARDS[2].title} line={CARDS[2].line}>
+          <OrbTrio />
         </Card>
       </div>
     </section>
