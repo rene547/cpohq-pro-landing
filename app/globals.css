@@ -308,9 +308,11 @@ body {
   border-radius: 9999px;
   overflow: hidden;
   background: #d5e3ff;
+  --orb-glow-a: rgba(51, 108, 240, 0.4);
+  --orb-glow-b: rgba(51, 108, 240, 0.22);
   box-shadow:
-    0 0 60px rgba(51, 108, 240, 0.4),
-    0 0 140px rgba(51, 108, 240, 0.22);
+    0 0 60px var(--orb-glow-a),
+    0 0 140px var(--orb-glow-b);
   transition: box-shadow 0.6s ease;
   filter: saturate(1.4);
   animation: orb-breathe 10s ease-in-out infinite;
@@ -338,10 +340,9 @@ body {
 
 .group:hover .cos-orb {
   box-shadow:
-    0 0 90px rgba(51, 108, 240, 0.55),
-    0 0 210px rgba(51, 108, 240, 0.32),
-    inset 0 -18px 40px rgba(10, 37, 64, 0.35),
-    inset 0 14px 30px rgba(255, 255, 255, 0.6);
+    0 0 90px var(--orb-glow-a),
+    0 0 90px var(--orb-glow-a),
+    0 0 210px var(--orb-glow-b);
   animation-duration: 4.5s;
 }
 

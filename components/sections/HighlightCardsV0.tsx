@@ -72,7 +72,7 @@ function Card({
       href={href}
       onMouseEnter={() => onHover?.(true)}
       onMouseLeave={() => onHover?.(false)}
-      className="group relative flex flex-col overflow-hidden rounded-brand border border-line bg-white min-h-[540px] transition hover:shadow-xl focus-visible:outline-2 focus-visible:outline-accent"
+      className="group relative flex flex-col overflow-hidden rounded-brand border border-line bg-soft min-h-[540px] transition hover:shadow-xl focus-visible:outline-2 focus-visible:outline-accent"
     >
       <div className="relative z-10 flex items-start justify-between gap-4 p-7 pb-0">
         <div>
@@ -80,7 +80,7 @@ function Card({
           <p className="mt-2 text-sm text-muted max-w-[26ch]">{line}</p>
         </div>
         <span
-          className="shrink-0 flex size-9 items-center justify-center rounded-[10px] bg-soft text-accent transition group-hover:bg-accent group-hover:text-accent-ink"
+          className="shrink-0 flex size-9 items-center justify-center rounded-[10px] bg-white text-accent transition group-hover:bg-accent group-hover:text-accent-ink"
           aria-hidden
         >
           <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
@@ -240,80 +240,110 @@ function PortraitSphere({ hoverRef }: { hoverRef: React.MutableRefObject<boolean
   return <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden />;
 }
 
-/* ---------- card 2: chief-of-staff orb with the Knoetic mesh shader ---------- */
+/* ---------- card 2: chief-of-staff strands (open, no glass) ---------- */
 
-function MeshOrb({ hovered }: { hovered: boolean }) {
+function StrandsFlow({ hovered }: { hovered: boolean }) {
   const reduced = useReducedMotion();
   return (
-    <div className="absolute inset-0 flex items-center justify-center" aria-hidden>
-      <div className="relative">
-        <span className="cos-orb-ring" />
-        <div className="cos-orb">
-          {/* Knoetic app hero shader, palette weighted blue for the small orb */}
-          <MeshGradient
-            colors={["#336CF0", "#2C56C4", "#D5E3FF", "#4F8BFF"]}
-            distortion={0.8}
-            swirl={0.1}
-            speed={reduced ? 0 : hovered ? 1.4 : 0.45}
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
-          />
-          <span className="cos-orb-shade" />
-        </div>
+    <div className="absolute inset-0" aria-hidden>
+      <Strands
+        colors={["#0252d4", "#1ea1b7", "#91a8ce"]}
+        count={3}
+        amplitude={1}
+        waviness={1}
+        thickness={0.7}
+        glow={2.6}
+        taper={3}
+        spread={1}
+        intensity={0.6}
+        saturation={1.5}
+        opacity={1}
+        scale={1.5}
+        glass={false}
+        refraction={1}
+        dispersion={1}
+        glassSize={1}
+        hueShift={0}
+        speed={reduced ? 0 : hovered ? 1.5 : 0.3}
+      />
+    </div>
+  );
+}
+
+/* ---------- card 3: mesh-shader orb trio (blue center, green + purple) ---------- */
+
+type OrbPalette = {
+  colors: string[];
+  glowA: string;
+  glowB: string;
+};
+
+const ORB_PALETTES: Record<string, OrbPalette> = {
+  blue: {
+    colors: ["#336CF0", "#2C56C4", "#D5E3FF", "#4F8BFF"],
+    glowA: "rgba(51, 108, 240, 0.4)",
+    glowB: "rgba(51, 108, 240, 0.22)",
+  },
+  green: {
+    colors: ["#0FBF8F", "#067A5B", "#D9F7EC", "#2BD9A8"],
+    glowA: "rgba(16, 185, 129, 0.38)",
+    glowB: "rgba(16, 185, 129, 0.2)",
+  },
+  purple: {
+    colors: ["#8B5CF6", "#5B21B6", "#EAE2FF", "#A78BFA"],
+    glowA: "rgba(139, 92, 246, 0.38)",
+    glowB: "rgba(139, 92, 246, 0.2)",
+  },
+};
+
+function ShaderOrb({
+  palette,
+  size,
+  hovered,
+  ring = false,
+  delay = 0,
+}: {
+  palette: OrbPalette;
+  size: number;
+  hovered: boolean;
+  ring?: boolean;
+  delay?: number;
+}) {
+  const reduced = useReducedMotion();
+  return (
+    <div className="relative shrink-0">
+      {ring && <span className="cos-orb-ring" />}
+      <div
+        className="cos-orb"
+        style={
+          {
+            width: size,
+            height: size,
+            animationDelay: `${delay}s`,
+            "--orb-glow-a": palette.glowA,
+            "--orb-glow-b": palette.glowB,
+          } as React.CSSProperties
+        }
+      >
+        <MeshGradient
+          colors={palette.colors}
+          distortion={0.8}
+          swirl={0.1}
+          speed={reduced ? 0 : hovered ? 1.4 : 0.45}
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+        />
+        <span className="cos-orb-shade" />
       </div>
     </div>
   );
 }
 
-/* ---------- card 3: three Strands glass orbs (React Bits) ---------- */
-
-const STRANDS_BASE = {
-  count: 3,
-  amplitude: 1,
-  waviness: 1,
-  thickness: 0.7,
-  glow: 2.6,
-  taper: 3,
-  spread: 1,
-  intensity: 0.6,
-  saturation: 1.9,
-  opacity: 1,
-  scale: 1.5,
-  glass: true,
-  refraction: 1.7,
-  dispersion: 1,
-  hueShift: 0,
-};
-
-function StrandsOrbs({ hovered }: { hovered: boolean }) {
-  const reduced = useReducedMotion();
-  const speed = reduced ? 0 : hovered ? 1.6 : 0.28;
-
+function OrbTrio({ hovered }: { hovered: boolean }) {
   return (
-    <div className="absolute inset-0 flex items-center justify-center" aria-hidden>
-      <div className="size-[104px] shrink-0">
-        <Strands
-          {...STRANDS_BASE}
-          glassSize={0.85}
-          speed={speed}
-          colors={["#067a5b", "#8ff0cf", "#10b981"]}
-        />
-      </div>
-      <div className="size-[168px] shrink-0 -mx-2">
-        <Strands
-          {...STRANDS_BASE}
-          glassSize={0.72}
-          speed={speed}
-          colors={["#162ef9", "#94a3b8", "#2672ed"]}
-        />
-      </div>
-      <div className="size-[104px] shrink-0">
-        <Strands
-          {...STRANDS_BASE}
-          glassSize={0.85}
-          speed={speed}
-          colors={["#5b21b6", "#c4b5fd", "#8b5cf6"]}
-        />
-      </div>
+    <div className="absolute inset-0 flex items-center justify-center gap-5" aria-hidden>
+      <ShaderOrb palette={ORB_PALETTES.green} size={88} hovered={hovered} delay={-3} />
+      <ShaderOrb palette={ORB_PALETTES.blue} size={150} hovered={hovered} ring />
+      <ShaderOrb palette={ORB_PALETTES.purple} size={88} hovered={hovered} delay={-6} />
     </div>
   );
 }
@@ -361,7 +391,7 @@ export default function HighlightCardsV0() {
           line={CARDS[1].line}
           onHover={setCosHover}
         >
-          <MeshOrb hovered={cosHover} />
+          <StrandsFlow hovered={cosHover} />
         </Card>
 
         <Card
@@ -370,7 +400,7 @@ export default function HighlightCardsV0() {
           line={CARDS[2].line}
           onHover={setAgentsHover}
         >
-          <StrandsOrbs hovered={agentsHover} />
+          <OrbTrio hovered={agentsHover} />
         </Card>
       </div>
     </section>
