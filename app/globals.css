@@ -299,6 +299,77 @@ body {
   }
 }
 
+/* ---------- v0 logo grid (ported from cpohq-site v3-credgrid) ---------- */
+
+.v0-logocell {
+  position: relative;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 68px;
+  padding: 14px 18px;
+  border-right: 1px solid var(--line);
+}
+
+.v0-logocell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 50%, color-mix(in srgb, var(--logo) 12%, transparent), transparent);
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.22, 0.61, 0.2, 1);
+}
+
+.v0-logocell:hover::before {
+  opacity: 1;
+}
+
+.v0-logocell img {
+  position: relative;
+  z-index: 1;
+  height: 18px;
+  width: auto;
+  max-width: 104px;
+  object-fit: contain;
+  filter: grayscale(1);
+  opacity: 0.55;
+  transition: filter 0.4s cubic-bezier(0.22, 0.61, 0.2, 1), opacity 0.4s cubic-bezier(0.22, 0.61, 0.2, 1);
+}
+
+.v0-logocell:hover img {
+  filter: grayscale(0);
+  opacity: 1;
+}
+
+@keyframes v0-logo-on {
+  0%, 100% { filter: grayscale(1); opacity: 0.55; }
+  50% { filter: grayscale(0); opacity: 1; }
+}
+
+@keyframes v0-glow-on {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+/* color sweep gated by .swept, added when the grid crosses the 55% viewport line */
+.v0-logogrid.swept .v0-logocell img {
+  animation: v0-logo-on 0.8s cubic-bezier(0.22, 0.61, 0.2, 1) var(--d, 0s) 1;
+}
+
+.v0-logogrid.swept .v0-logocell::before {
+  animation: v0-glow-on 0.8s cubic-bezier(0.22, 0.61, 0.2, 1) var(--d, 0s) 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v0-logogrid.swept .v0-logocell img,
+  .v0-logogrid.swept .v0-logocell::before {
+    animation: none;
+  }
+}
+
 /* ---------- Chief-of-staff orb (v0 highlight card) ---------- */
 
 .cos-orb {

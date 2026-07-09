@@ -8,6 +8,7 @@ import Hero from "@/components/sections/Hero";
 import HeroV0 from "@/components/sections/HeroV0";
 import { ShellNavbar } from "@/components/ShellNavbar";
 import LogoBar from "@/components/sections/LogoBar";
+import LogoBarV0 from "@/components/sections/LogoBarV0";
 import Highlights from "@/components/sections/Highlights";
 import HighlightCardsV0 from "@/components/sections/HighlightCardsV0";
 import LoveWall from "@/components/sections/LoveWall";
@@ -64,7 +65,7 @@ export default function Landing({ variant }: { variant: Variant }) {
           <Hero variant={variant} onJoin={openJoin} />
         </>
       )}
-      <LogoBar variant={variant} />
+      {variant.id === "v0" ? <LogoBarV0 /> : <LogoBar variant={variant} />}
       {variant.id === "v0" ? <HighlightCardsV0 /> : <Highlights />}
       {variant.id === "v0" ? <LoveWallV0 /> : <LoveWall />}
       {variant.id === "v0" ? <CommunityV0 /> : <Community />}
