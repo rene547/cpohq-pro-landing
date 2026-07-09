@@ -89,10 +89,12 @@ function Card({
       <div className="relative z-10 flex items-start justify-between gap-4 p-7 pb-0">
         <div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
+          {/* trimmed wordmark (the brand PNG is 71% padding) at ~80% of the
+              24px title size, so its weight reads equal to the title */}
           <img
-            src="/brand/cpohqlogo-horizontal-black.png"
+            src="/brand/cpohq-wordmark-trim.png"
             alt="CPOHQ"
-            className="h-[11px] w-auto opacity-55"
+            className="h-[19px] w-auto opacity-70"
           />
           <h3 className="mt-1.5 text-2xl font-medium tracking-tight">{title}</h3>
           <p className="mt-2 text-sm text-muted max-w-[30ch]">{line}</p>
