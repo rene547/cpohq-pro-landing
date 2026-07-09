@@ -1,19 +1,36 @@
+"use client";
+
+import { useRef } from "react";
 import Image from "next/image";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+import { GradientAvatar } from "@outpacelabs/avatars";
 import { loveWall } from "@/lib/content-v1";
 import Reveal from "@/components/Reveal";
 
-/* v0 love wall: white cards with a soft shadow, and explicit columns whose
-   photo cards flex to absorb height differences -- every column bottoms out
-   on the same line, so the bento reads as one clean rectangle. */
+gsap.registerPlugin(ScrollTrigger, useGSAP);
+
+/* v1 love wall, upgraded per client feedback 2026-07-09: quote cards carry
+   gradient avatars, an accent quote mark, and a hover lift; one featured
+   quote goes dark navy for contrast; photo cards read as real clip
+   thumbnails (center play, duration chip, caption scrim); and the three
+   columns drift at slightly different rates while scrolling (scrub-driven,
+   so the wall idles still, is flush at section center, and reduced motion
+   gets the static layout). Aura washes sit behind the grid. */
 
 type Quote = (typeof loveWall.quotes)[number];
-type Photo = (typeof loveWall.photos)[number] & { video?: boolean };
+type Photo = (typeof loveWall.photos)[number];
 
 type Item =
-  | ({ kind: "quote" } & Quote)
-  | ({ kind: "photo"; cls: string } & Photo);
+  | ({ kind: "quote"; featured?: boolean } & Quote)
+  | ({ kind: "photo"; cls: string; video: boolean } & Photo);
 
-const q = (i: number): Item => ({ kind: "quote", ...loveWall.quotes[i] });
+const q = (i: number, featured = false): Item => ({
+  kind: "quote",
+  featured,
+  ...loveWall.quotes[i],
+});
 const p = (i: number, cls: string, video = false): Item => ({
   kind: "photo",
   ...loveWall.photos[i],
@@ -25,18 +42,153 @@ const p = (i: number, cls: string, video = false): Item => ({
    column; the flex-1 photo in each column absorbs the height difference so
    all three columns still end flush */
 const COLUMNS: Item[][] = [
-  [q(0), p(0, "h-72", true), q(3), p(3, "flex-1 min-h-[200px]"), q(6)],
-  [p(1, "h-52"), q(1), q(4), q(7), p(4, "flex-1 min-h-[240px]")],
+  [q(0), p(0, "h-72", true), q(3), p(3, "flex-1 min-h-[200px]", true), q(6)],
+  [p(1, "h-52"), q(1), q(4), q(7, true), p(4, "flex-1 min-h-[240px]")],
   [q(2), p(2, "flex-1 min-h-[260px]", true), q(5), q(8), q(9)],
 ];
 
+/* px of drift per column at the section's scroll extremes; zero crossing at
+   section center keeps the flush-bottom rectangle intact where it matters */
+const DRIFT = [18, -30, 14];
+
 const cardShadow =
   "shadow-[0_1px_2px_rgba(10,37,64,0.05),0_10px_28px_rgba(10,37,64,0.07)]";
+const cardHover =
+  "transition duration-300 hover:-translate-y-1 hover:shadow-[0_2px_4px_rgba(10,37,64,0.06),0_18px_44px_rgba(10,37,64,0.12)]";
+
+function initials(name: string) {
+  return name.split(" ").map((w) => w[0]).join("");
+}
+
+function QuoteCard({ item, seed }: { item: Extract<Item, { kind: "quote" }>; seed: string }) {
+  const dark = item.featured;
+  return (
+    <figure
+      data-reveal-item
+      className={`relative rounded-brand border p-6 ${cardShadow} ${cardHover} ${
+        dark
+          ? "bg-dark border-dark text-dark-ink"
+          : "bg-white border-line/70 hover:border-accent/35"
+      }`}
+    >
+      <svg
+        width="26"
+        height="20"
+        viewBox="0 0 26 20"
+        fill="currentColor"
+        aria-hidden
+        className={dark ? "text-white/25" : "text-accent/30"}
+      >
+        <path d="M0 20V11.6C0 4.9 3.7 1 10.4 0l1.2 3.1c-3.6.9-5.4 2.8-5.6 5.9H11V20H0zm15 0V11.6C15 4.9 18.7 1 25.4 0l.6 3.1c-3.6.9-5.4 2.8-5.6 5.9H26V20H15z" opacity=".9" transform="scale(0.95)" />
+      </svg>
+      <blockquote
+        className={`mt-3 font-display tracking-tight ${
+          dark ? "text-xl md:text-[1.35rem] leading-snug" : "text-[17px] leading-snug"
+        }`}
+      >
+        {item.q}
+      </blockquote>
+      <figcaption className="mt-5 flex items-center gap-3">
+        <span className="relative size-9 shrink-0 overflow-hidden rounded-full">
+          <GradientAvatar seed={seed} size={36} />
+          <span className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-white/95">
+            {initials(item.name)}
+          </span>
+        </span>
+        <span>
+          <span className="block text-sm font-medium">{item.name}</span>
+          <span className={`block text-xs ${dark ? "text-dark-muted" : "text-muted"}`}>
+            {item.role}
+          </span>
+        </span>
+      </figcaption>
+    </figure>
+  );
+}
+
+function ClipCard({ item }: { item: Extract<Item, { kind: "photo" }> }) {
+  return (
+    <div
+      data-reveal-item
+      className={`group relative overflow-hidden rounded-brand border border-line/70 ${item.cls} ${cardShadow} ${cardHover}`}
+    >
+      <Image
+        src={item.src}
+        alt={item.alt}
+        fill
+        sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
+        className="object-cover transition duration-700 group-hover:scale-[1.045]"
+      />
+      <div
+        aria-hidden
+        className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/60 via-black/25 to-transparent"
+      />
+      <div className="absolute inset-x-3 bottom-3 flex items-end justify-between gap-2 text-white">
+        <span className="text-xs font-medium leading-tight [text-shadow:0_1px_8px_rgba(0,0,0,0.45)]">
+          {item.caption}
+        </span>
+        {item.video && item.duration && (
+          <span className="shrink-0 rounded-full bg-black/45 px-2 py-0.5 text-[11px] tabular-nums backdrop-blur">
+            {item.duration}
+          </span>
+        )}
+      </div>
+      {item.video && (
+        <span className="absolute inset-0 flex items-center justify-center" aria-hidden>
+          <span className="flex size-12 items-center justify-center rounded-full bg-white/85 text-ink shadow-lg backdrop-blur transition duration-300 group-hover:scale-110 group-hover:bg-white">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+              <path d="M3.5 2v10l8.5-5-8.5-5z" />
+            </svg>
+          </span>
+        </span>
+      )}
+    </div>
+  );
+}
 
 export default function LoveWallV1() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const colRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useGSAP(
+    () => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      colRefs.current.forEach((el, i) => {
+        if (!el) return;
+        gsap.fromTo(
+          el,
+          { y: DRIFT[i] },
+          {
+            y: -DRIFT[i],
+            ease: "none",
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 1.2,
+            },
+          }
+        );
+      });
+    },
+    { scope: sectionRef }
+  );
+
   return (
-    <section className="bg-soft border-y border-line">
-      <div className="mx-auto max-w-[1200px] px-6 py-28">
+    <section ref={sectionRef} className="relative overflow-hidden bg-soft border-y border-line">
+      {/* faint aura washes so the wall doesn't sit on a flat field */}
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div
+          className="absolute left-[6%] top-[12%] h-[440px] w-[440px] rounded-full blur-3xl"
+          style={{ background: "var(--aura-a)" }}
+        />
+        <div
+          className="absolute right-[4%] bottom-[8%] h-[400px] w-[400px] rounded-full blur-3xl"
+          style={{ background: "var(--aura-b)" }}
+        />
+      </div>
+
+      <div className="relative mx-auto max-w-[1200px] px-6 py-28">
         <Reveal>
           <h2 className="font-display text-3xl md:text-5xl tracking-tight text-center">
             {loveWall.headline}
@@ -44,49 +196,23 @@ export default function LoveWallV1() {
           <p className="mt-3 text-muted text-center">{loveWall.sub}</p>
         </Reveal>
 
-        <Reveal staggerChildren={0.05} className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
+        <Reveal
+          staggerChildren={0.05}
+          className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 items-stretch"
+        >
           {COLUMNS.map((column, ci) => (
-            <div key={ci} className="flex flex-col gap-5">
+            <div
+              key={ci}
+              ref={(el) => {
+                colRefs.current[ci] = el;
+              }}
+              className="flex flex-col gap-5"
+            >
               {column.map((item, i) =>
                 item.kind === "quote" ? (
-                  <figure
-                    key={i}
-                    data-reveal-item
-                    className={`rounded-brand bg-white border border-line/70 p-6 ${cardShadow}`}
-                  >
-                    <blockquote className="leading-relaxed">“{item.q}”</blockquote>
-                    <figcaption className="mt-4 flex items-center gap-3">
-                      <span className="w-9 h-9 rounded-full bg-soft border border-line flex items-center justify-center text-xs text-muted">
-                        {item.name.split(" ").map((w) => w[0]).join("")}
-                      </span>
-                      <span>
-                        <span className="block text-sm font-medium">{item.name}</span>
-                        <span className="block text-xs text-muted">{item.role}</span>
-                      </span>
-                    </figcaption>
-                  </figure>
+                  <QuoteCard key={i} item={item} seed={`cpohq-${ci}-${i}-${item.role}`} />
                 ) : (
-                  <div
-                    key={i}
-                    data-reveal-item
-                    className={`group relative overflow-hidden rounded-brand border border-line/70 ${item.cls} ${cardShadow}`}
-                  >
-                    <Image
-                      src={item.src}
-                      alt={item.alt}
-                      fill
-                      sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
-                      className="object-cover transition duration-500 group-hover:scale-[1.03]"
-                    />
-                    {item.video && (
-                      <span className="absolute bottom-3 left-3 flex items-center gap-2 rounded-full bg-black/55 text-white text-xs px-3 py-1.5 backdrop-blur">
-                        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden>
-                          <path d="M2 1.5v7l6-3.5-6-3.5z" />
-                        </svg>
-                        Clip plays on hover
-                      </span>
-                    )}
-                  </div>
+                  <ClipCard key={i} item={item} />
                 )
               )}
             </div>

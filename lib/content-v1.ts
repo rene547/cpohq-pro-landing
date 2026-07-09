@@ -42,7 +42,7 @@ export const highlights = [
 ];
 
 export const loveWall = {
-  headline: "The most loved community in HR.",
+  headline: "Loved by 1,000s of Chief People Officers.",
   sub: "Notes, clips, and posts from members, unedited.",
   // Placeholder quotes. Lucas is sending 15 attributed quotes; swap 1:1.
   quotes: [
@@ -57,12 +57,14 @@ export const loveWall = {
     { q: "Our whole people team runs on the playbooks we found here.", name: "Placeholder Name", role: "CHRO, logistics" },
     { q: "The summit was the best two days I have spent all year.", name: "Placeholder Name", role: "CPO, developer tools" },
   ],
+  /* captions/durations are placeholders like the quotes; swap when Lucas
+     delivers the Elevate clips */
   photos: [
-    { src: "/photos/summit-passion.jpg", alt: "Speaker on stage at a CPOHQ summit" },
-    { src: "/photos/summit-hoodies.jpg", alt: "Members at Summit II, The Timeless and the Timely" },
-    { src: "/photos/summit-panel.jpg", alt: "Panel on AI and the organization of 2030" },
-    { src: "/photos/summit-welcoming.jpg", alt: "Founder welcoming members on stage" },
-    { src: "/photos/summit-joseph-mic.jpg", alt: "Session at a CPOHQ summit" },
+    { src: "/photos/summit-passion.jpg", alt: "Speaker on stage at a CPOHQ summit", caption: "Summit keynote", duration: "0:38" },
+    { src: "/photos/summit-hoodies.jpg", alt: "Members at Summit II, The Timeless and the Timely", caption: "Summit II floor", duration: "" },
+    { src: "/photos/summit-panel.jpg", alt: "Panel on AI and the organization of 2030", caption: "The organization of 2030", duration: "1:12" },
+    { src: "/photos/summit-welcoming.jpg", alt: "Founder welcoming members on stage", caption: "Opening welcome", duration: "0:29" },
+    { src: "/photos/summit-joseph-mic.jpg", alt: "Session at a CPOHQ summit", caption: "Member Q&A", duration: "" },
   ],
 };
 
