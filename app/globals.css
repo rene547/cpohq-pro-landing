@@ -306,14 +306,24 @@ body {
   width: 190px;
   height: 190px;
   border-radius: 9999px;
-  background: radial-gradient(circle at 38% 32%, #eaf2ff 0%, #6f9aff 28%, #336cf0 58%, #1f3fae 100%);
+  overflow: hidden;
+  background: #d5e3ff;
   box-shadow:
     0 0 60px rgba(51, 108, 240, 0.4),
-    0 0 140px rgba(51, 108, 240, 0.22),
-    inset 0 -18px 40px rgba(10, 37, 64, 0.35),
-    inset 0 14px 30px rgba(255, 255, 255, 0.55);
+    0 0 140px rgba(51, 108, 240, 0.22);
   transition: box-shadow 0.6s ease;
   animation: orb-breathe 10s ease-in-out infinite;
+}
+
+/* depth pass over the shader so it still reads as a sphere */
+.cos-orb-shade {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 36% 28%, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0) 40%),
+    radial-gradient(circle at 50% 128%, rgba(10, 37, 64, 0.42) 0%, rgba(10, 37, 64, 0) 58%),
+    radial-gradient(circle at 50% 50%, rgba(31, 63, 174, 0) 58%, rgba(31, 63, 174, 0.38) 100%);
 }
 
 .cos-orb-sheen {

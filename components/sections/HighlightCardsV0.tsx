@@ -2,12 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { MeshGradient } from "@paper-design/shaders-react";
 
-/* v0 highlights: three tall Stripe-anatomy cards. Visuals ported from
-   Knoetic-CPOHQ-Landing-Page (sphere + orbit hero, main.js) and recolored
-   to brand blue. Everything idles near-still and reacts on hover. */
-
-const BRAND = 0x336cf0;
+/* v0 highlights: three tall Stripe-anatomy cards.
+   1 Community — portrait sphere ported from Knoetic-CPOHQ-Landing-Page.
+   2 AI Chief of Staff — orb filled with the Knoetic app mesh-gradient shader.
+   3 Team of AI agents — zoomed orbit quadrant, gradient orbs (blue/green/purple).
+   Everything idles near-still and reacts on hover. */
 
 /* Portrait pool lifted from the source project (CORS-enabled Unsplash IDs) */
 const PORTRAIT_IDS = [
@@ -210,7 +211,6 @@ function PortraitSphere({ hoverRef }: { hoverRef: React.MutableRefObject<boolean
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
       resize();
-      // extremely slow idle; eases up when the card is hovered
       const target = reduced ? 0 : hoverRef.current ? 0.34 : 0.045;
       speed += (target - speed) * 0.045;
       spin += speed * dt;
@@ -220,7 +220,6 @@ function PortraitSphere({ hoverRef }: { hoverRef: React.MutableRefObject<boolean
         t.mesh.position.set(bx * cs + bz * sn, by, -bx * sn + bz * cs);
         t.mesh.quaternion.copy(camera.quaternion);
         t.mesh.scale.setScalar(t.sv);
-        // back-of-sphere tiles recede
         t.mat.opacity = 0.35 + 0.65 * ((t.mesh.position.z / R + 1) / 2);
       }
       camera.lookAt(0, 0, 0);
@@ -240,168 +239,165 @@ function PortraitSphere({ hoverRef }: { hoverRef: React.MutableRefObject<boolean
   return <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden />;
 }
 
-/* ---------- card 3: orbiting AI orbs (ported orbit mode) ---------- */
+/* ---------- card 2: chief-of-staff orb with the Knoetic mesh shader ---------- */
 
-function orbTexture(core: string, glow: string) {
-  const S = 128;
-  const cv = document.createElement("canvas");
-  cv.width = cv.height = S;
-  const c = cv.getContext("2d")!;
-  let g = c.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2);
-  g.addColorStop(0, glow);
-  g.addColorStop(1, "rgba(51,108,240,0)");
-  c.fillStyle = g;
-  c.fillRect(0, 0, S, S);
-  g = c.createRadialGradient(S * 0.44, S * 0.42, S * 0.02, S / 2, S / 2, S * 0.24);
-  g.addColorStop(0, "#eaf2ff");
-  g.addColorStop(0.35, core);
-  g.addColorStop(1, "#1f3fae");
-  c.fillStyle = g;
-  c.beginPath();
-  c.arc(S / 2, S / 2, S * 0.24, 0, Math.PI * 2);
-  c.fill();
-  const tex = new THREE.CanvasTexture(cv);
-  tex.colorSpace = THREE.SRGBColorSpace;
-  return tex;
+function MeshOrb({ hovered }: { hovered: boolean }) {
+  const reduced = useReducedMotion();
+  return (
+    <div className="absolute inset-0 flex items-center justify-center" aria-hidden>
+      <div className="relative">
+        <span className="cos-orb-ring" />
+        <div className="cos-orb">
+          {/* Knoetic app hero shader, palette weighted blue for the small orb */}
+          <MeshGradient
+            colors={["#336CF0", "#2C56C4", "#D5E3FF", "#4F8BFF"]}
+            distortion={0.8}
+            swirl={0.1}
+            speed={reduced ? 0 : hovered ? 1.4 : 0.45}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+          />
+          <span className="cos-orb-shade" />
+          <span className="cos-orb-sheen" />
+        </div>
+      </div>
+    </div>
+  );
 }
 
-function OrbitOrbs({ hoverRef }: { hoverRef: React.MutableRefObject<boolean> }) {
+/* ---------- card 3: zoomed orbit quadrant, gradient orbs (2D canvas) ---------- */
+
+type OrbSpec = {
+  ring: number;
+  a0: number;
+  size: number;
+  dir: number;
+  speed: number;
+  color: [string, string, string]; // highlight, core, edge
+  ph: number;
+};
+
+const ORB_COLORS: [string, string, string][] = [
+  ["#dbe7ff", "#336cf0", "#1e3fae"], // brand blue
+  ["#e9e2ff", "#7c5cf6", "#4c33b8"], // purple
+  ["#d8f7ec", "#0fbf8f", "#067a5b"], // green
+  ["#dcecff", "#4f8bff", "#2c56c4"], // light blue
+];
+
+function OrbitQuadrant({ hoverRef }: { hoverRef: React.MutableRefObject<boolean> }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const reduced = useReducedMotion();
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    const ctx = canvas.getContext("2d")!;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    const rings = [
-      { r: 1.0, count: 2, speed: 0.16, dir: 1 },
-      { r: 1.7, count: 4, speed: 0.115, dir: -1 },
-      { r: 2.4, count: 5, speed: 0.085, dir: 1 },
-      { r: 3.1, count: 7, speed: 0.06, dir: -1 },
-    ];
-
-    // dotted ring guides (lifted from the source's orbit mode)
-    const dotSprite = (() => {
-      const cc = document.createElement("canvas");
-      cc.width = cc.height = 64;
-      const x = cc.getContext("2d")!;
-      x.fillStyle = "#fff";
-      x.beginPath();
-      x.arc(32, 32, 29, 0, Math.PI * 2);
-      x.fill();
-      const t = new THREE.CanvasTexture(cc);
-      t.minFilter = THREE.LinearFilter;
-      t.magFilter = THREE.LinearFilter;
-      t.generateMipmaps = false;
-      return t;
-    })();
-
-    const disposables: { dispose(): void }[] = [dotSprite];
-
-    rings.forEach((rg) => {
-      const cnt = Math.max(70, Math.round((2 * Math.PI * rg.r) / 0.14));
-      const pos: number[] = [];
-      for (let s = 0; s < cnt; s++) {
-        const a = (s / cnt) * Math.PI * 2;
-        pos.push(Math.cos(a) * rg.r, Math.sin(a) * rg.r, 0);
-      }
-      const g = new THREE.BufferGeometry();
-      g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
-      const m = new THREE.PointsMaterial({ color: 0x8fa3c4, map: dotSprite, size: 0.03, transparent: true, opacity: 0.55, depthWrite: false, sizeAttenuation: true });
-      scene.add(new THREE.Points(g, m));
-      disposables.push(g, m);
-    });
-
-    // orbs
-    const orbTex = orbTexture("#336cf0", "rgba(51,108,240,0.34)");
-    disposables.push(orbTex);
-    const geo = new THREE.PlaneGeometry(1, 1);
-    disposables.push(geo);
-    const orbs: { mesh: THREE.Mesh; rg: (typeof rings)[number]; a0: number; s: number; ph: number }[] = [];
-    rings.forEach((rg, ri) => {
-      for (let k = 0; k < rg.count; k++) {
-        const mat = new THREE.MeshBasicMaterial({ map: orbTex, transparent: true, depthWrite: false });
-        const mesh = new THREE.Mesh(geo, mat);
-        scene.add(mesh);
-        disposables.push(mat);
-        orbs.push({ mesh, rg, a0: (k / rg.count) * Math.PI * 2 + ri * 0.7, s: 0.5 + Math.random() * 0.5, ph: Math.random() * Math.PI * 2 });
+    // orbit system center sits past the bottom-right corner: the card frames
+    // the top-left quadrant of a much larger system (the "zoomed in" read)
+    const RINGS = [0.34, 0.5, 0.66, 0.82, 0.98];
+    const orbs: OrbSpec[] = [];
+    let seed = 7;
+    const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    RINGS.forEach((_, ri) => {
+      const count = 2 + (ri % 2);
+      for (let k = 0; k < count; k++) {
+        orbs.push({
+          ring: ri,
+          a0: Math.PI + (k / count) * (Math.PI / 2) + rand() * 0.5 + ri * 0.22,
+          size: 9 + rand() * 12 + (ri < 2 ? 3 : 0),
+          dir: ri % 2 ? -1 : 1,
+          speed: 0.05 - ri * 0.007,
+          color: ORB_COLORS[(ri + k) % ORB_COLORS.length],
+          ph: rand() * Math.PI * 2,
+        });
       }
     });
 
-    // still center orb anchoring the system
-    const centerMat = new THREE.MeshBasicMaterial({ map: orbTex, transparent: true, depthWrite: false });
-    const center = new THREE.Mesh(geo, centerMat);
-    center.scale.setScalar(1.15);
-    scene.add(center);
-    disposables.push(centerMat);
-
-    let vis = true, t = 0, speed = 0, raf = 0;
+    let vis = true, t = 0, mult = 0, raf = 0;
     let last = performance.now();
     const io = new IntersectionObserver((e) => { vis = e[0].isIntersecting; }, { threshold: 0 });
     io.observe(canvas);
 
-    function resize() {
-      const w = canvas!.clientWidth, h = canvas!.clientHeight;
-      if (canvas!.width !== w || canvas!.height !== h) {
-        renderer.setSize(w, h, false);
-        camera.aspect = w / h;
-        const tan = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
-        const need = 3.5;
-        camera.position.z = Math.max(need / tan, need / (tan * camera.aspect));
-        camera.updateProjectionMatrix();
-      }
-    }
-
-    function frame() {
-      raf = requestAnimationFrame(frame);
+    function draw() {
+      raf = requestAnimationFrame(draw);
       if (!vis) return;
       const now = performance.now();
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
-      resize();
-      const target = reduced ? 0 : hoverRef.current ? 5.2 : 1;
-      speed += (target - speed) * 0.05;
-      t += dt * speed;
-      for (const o of orbs) {
-        const a = o.a0 + o.rg.dir * t * o.rg.speed;
-        o.mesh.position.set(Math.cos(a) * o.rg.r, Math.sin(a) * o.rg.r, 0.01);
-        o.mesh.quaternion.copy(camera.quaternion);
-        const pulse = 1 + Math.sin(t * 0.8 + o.ph) * 0.06;
-        o.mesh.scale.setScalar(o.s * pulse);
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = canvas!.clientWidth, h = canvas!.clientHeight;
+      if (canvas!.width !== w * dpr || canvas!.height !== h * dpr) {
+        canvas!.width = w * dpr;
+        canvas!.height = h * dpr;
       }
-      center.scale.setScalar(1.15 + Math.sin(t * 0.5) * 0.05);
-      camera.lookAt(0, 0, 0);
-      renderer.render(scene, camera);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+
+      const target = reduced ? 0 : hoverRef.current ? 4.6 : 1;
+      mult += (target - mult) * 0.05;
+      t += dt * mult;
+
+      const cx = w * 1.06, cy = h * 1.08;
+      const D = Math.hypot(w, h);
+
+      // dotted ring guides
+      ctx.lineCap = "round";
+      RINGS.forEach((rf, ri) => {
+        const R = rf * D;
+        ctx.beginPath();
+        ctx.setLineDash([0.1, 9]);
+        ctx.lineWidth = 1.6;
+        ctx.strokeStyle = `rgba(96, 118, 158, ${0.34 - ri * 0.03})`;
+        ctx.arc(cx, cy, R, Math.PI * 0.95, Math.PI * 1.55);
+        ctx.stroke();
+      });
+      ctx.setLineDash([]);
+
+      // orbs: soft halo, gradient body, specular highlight
+      for (const o of orbs) {
+        const R = RINGS[o.ring] * D;
+        const a = o.a0 + o.dir * t * o.speed;
+        const x = cx + Math.cos(a) * R;
+        const y = cy + Math.sin(a) * R;
+        if (x < -40 || y < -40 || x > w + 40 || y > h + 40) continue;
+        const s = o.size * (1 + Math.sin(t * 0.9 + o.ph) * 0.05);
+
+        let g = ctx.createRadialGradient(x, y, s * 0.4, x, y, s * 2.4);
+        g.addColorStop(0, o.color[1] + "3d");
+        g.addColorStop(1, o.color[1] + "00");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(x, y, s * 2.4, 0, Math.PI * 2);
+        ctx.fill();
+
+        g = ctx.createRadialGradient(x - s * 0.32, y - s * 0.38, s * 0.08, x, y, s);
+        g.addColorStop(0, o.color[0]);
+        g.addColorStop(0.42, o.color[1]);
+        g.addColorStop(1, o.color[2]);
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(x, y, s, 0, Math.PI * 2);
+        ctx.fill();
+
+        g = ctx.createRadialGradient(x - s * 0.36, y - s * 0.42, 0, x - s * 0.36, y - s * 0.42, s * 0.5);
+        g.addColorStop(0, "rgba(255,255,255,0.85)");
+        g.addColorStop(1, "rgba(255,255,255,0)");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(x - s * 0.36, y - s * 0.42, s * 0.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
-    frame();
+    draw();
 
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
-      disposables.forEach((d) => d.dispose());
-      renderer.dispose();
     };
   }, [reduced, hoverRef]);
 
   return <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden />;
-}
-
-/* ---------- card 2: the chief-of-staff orb (CSS) ---------- */
-
-function GlowOrb() {
-  return (
-    <div className="absolute inset-0 flex items-center justify-center" aria-hidden>
-      <div className="cos-orb">
-        <span className="cos-orb-sheen" />
-        <span className="cos-orb-ring" />
-      </div>
-    </div>
-  );
 }
 
 /* ---------- section ---------- */
@@ -427,6 +423,7 @@ const CARDS = [
 export default function HighlightCardsV0() {
   const sphereHover = useRef(false);
   const orbitHover = useRef(false);
+  const [cosHover, setCosHover] = useState(false);
 
   return (
     <section className="mx-auto max-w-[1200px] px-6 py-24">
@@ -440,8 +437,13 @@ export default function HighlightCardsV0() {
           <PortraitSphere hoverRef={sphereHover} />
         </Card>
 
-        <Card href={`#${CARDS[1].id}`} title={CARDS[1].title} line={CARDS[1].line}>
-          <GlowOrb />
+        <Card
+          href={`#${CARDS[1].id}`}
+          title={CARDS[1].title}
+          line={CARDS[1].line}
+          onHover={setCosHover}
+        >
+          <MeshOrb hovered={cosHover} />
         </Card>
 
         <Card
@@ -450,7 +452,7 @@ export default function HighlightCardsV0() {
           line={CARDS[2].line}
           onHover={(h) => { orbitHover.current = h; }}
         >
-          <OrbitOrbs hoverRef={orbitHover} />
+          <OrbitQuadrant hoverRef={orbitHover} />
         </Card>
       </div>
     </section>
