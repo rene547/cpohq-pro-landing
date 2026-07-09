@@ -1,8 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { GradientAvatar } from "@outpacelabs/avatars";
 import Strands from "@/components/Strands";
 
 /* v0 highlights: three tall Stripe-anatomy cards.
@@ -190,7 +190,7 @@ function PortraitSphere({ hoverRef }: { hoverRef: React.MutableRefObject<boolean
       scene.add(mesh);
       tiles.push({ mesh, mat, base, sv: 0.72 + Math.random() * 0.5 });
 
-      const img = new Image();
+      const img = new window.Image();
       img.crossOrigin = "anonymous";
       img.onload = () => {
         const old = mat.map;
@@ -283,59 +283,53 @@ function StrandsFlow({ hovered }: { hovered: boolean }) {
   );
 }
 
-/* ---------- card 3: Outpace gradient-avatar orbs ----------
-   The site gallery numbers (041/139/167) are random per session past item 30,
-   so those exact seeds are unrecoverable. These were found instead by scanning
-   generatePalette() for the target hues -- blue (main, near brand #336CF0),
-   purple, green. The avatars are static canvases; motion comes from a slow
-   CSS spin + breathe on the wrapper, which reads as the gradient drifting. */
+/* ---------- card 3: product dashboards + two Strands glass orbs ----------
+   Client feedback 2026-07-09: the center Outpace orb becomes the layered
+   dashboards render; two small glass-ball Strands orbs (React Bits configs,
+   green and pink palettes) float around it. Both idle slow and stop under
+   reduced motion. */
 
-const ORBS = {
-  main: { seed: "k76760", glowA: "rgba(51, 108, 240, 0.35)", glowB: "rgba(51, 108, 240, 0.18)" },
-  purple: { seed: "cpo26093", glowA: "rgba(139, 92, 246, 0.35)", glowB: "rgba(139, 92, 246, 0.18)" },
-  green: { seed: "cpo18614", glowA: "rgba(16, 185, 129, 0.35)", glowB: "rgba(16, 185, 129, 0.18)" },
+const ORB_BASE = {
+  count: 3,
+  amplitude: 1,
+  waviness: 1,
+  thickness: 0.7,
+  glow: 2.6,
+  taper: 3,
+  spread: 1,
+  intensity: 0.6,
+  saturation: 1.5,
+  opacity: 1,
+  scale: 1.5,
+  glass: true,
+  refraction: 1,
+  dispersion: 1,
+  glassSize: 1,
+  hueShift: 0,
 };
 
-function AvatarOrb({
-  orb,
-  size,
-  ring = false,
-  delay = 0,
-}: {
-  orb: (typeof ORBS)[keyof typeof ORBS];
-  size: number;
-  ring?: boolean;
-  delay?: number;
-}) {
-  return (
-    <div className="relative shrink-0">
-      {ring && <span className="cos-orb-ring" />}
-      <div
-        className="avatar-orb"
-        style={
-          {
-            width: size,
-            height: size,
-            animationDelay: `${delay}s`,
-            "--orb-glow-a": orb.glowA,
-            "--orb-glow-b": orb.glowB,
-          } as React.CSSProperties
-        }
-      >
-        <div className="avatar-orb-spin" style={{ animationDelay: `${delay}s` }}>
-          <GradientAvatar seed={orb.seed} size={size} />
-        </div>
-      </div>
-    </div>
-  );
+function GlassOrb({ colors, reduced }: { colors: string[]; reduced: boolean }) {
+  return <Strands {...ORB_BASE} colors={colors} speed={reduced ? 0 : 0.5} />;
 }
 
-function OrbTrio() {
+function DashboardsVisual() {
+  const reduced = useReducedMotion();
   return (
-    <div className="absolute inset-0 flex items-center justify-center gap-4" aria-hidden>
-      <AvatarOrb orb={ORBS.green} size={80} delay={-3} />
-      <AvatarOrb orb={ORBS.main} size={148} ring />
-      <AvatarOrb orb={ORBS.purple} size={80} delay={-6} />
+    <div className="absolute inset-0" aria-hidden>
+      {/* the render carries wide transparent margins; scale past them */}
+      <Image
+        src="/product/dashboards.png"
+        alt=""
+        fill
+        sizes="(min-width: 768px) 40vw, 90vw"
+        className="object-contain scale-[1.4]"
+      />
+      <div className="absolute left-[5%] top-[63%] size-20 -translate-y-1/2">
+        <GlassOrb colors={["#0c722a", "#10B981", "#06B6D4"]} reduced={reduced} />
+      </div>
+      <div className="absolute right-[5%] top-[36%] size-20 -translate-y-1/2">
+        <GlassOrb colors={["#EC4899", "#4a0e84", "#06B6D4"]} reduced={reduced} />
+      </div>
     </div>
   );
 }
@@ -386,7 +380,7 @@ export default function HighlightCardsV1() {
         </Card>
 
         <Card href={`#${CARDS[2].id}`} title={CARDS[2].title} line={CARDS[2].line}>
-          <OrbTrio />
+          <DashboardsVisual />
         </Card>
       </div>
     </section>
