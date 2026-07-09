@@ -7,12 +7,18 @@ import Reveal from "@/components/Reveal";
 
 /* v0 hero: Stripe anatomy under the hive-shell navbar (rendered by Landing).
    Background is a Unicorn Studio WebGL scene; text column sits above it. */
-export default function HeroV0({ onJoin }: { onJoin: (email: string) => void }) {
+export default function HeroV0({
+  onJoin,
+  mirror = false,
+}: {
+  onJoin: (email: string) => void;
+  mirror?: boolean;
+}) {
   const [email, setEmail] = useState("");
 
   return (
     <section className="relative overflow-hidden">
-      <div className="absolute inset-0" aria-hidden>
+      <div className={`absolute inset-0 ${mirror ? "-scale-x-100" : ""}`} aria-hidden>
         <UnicornScene
           projectId="nJ0w2R0GbPeCwizm5cWx"
           width="100%"

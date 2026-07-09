@@ -344,6 +344,12 @@ body {
   opacity: 1;
 }
 
+/* v4 variant: logos always in full color */
+.v0-logogrid.v0-colored .v0-logocell img {
+  filter: grayscale(0);
+  opacity: 0.92;
+}
+
 @keyframes v0-logo-on {
   0%, 100% { filter: grayscale(1); opacity: 0.55; }
   50% { filter: grayscale(0); opacity: 1; }

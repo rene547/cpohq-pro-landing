@@ -164,7 +164,7 @@ function SteppedRow({
   );
 }
 
-export default function LogoBarV0() {
+export default function LogoBarV0({ colored = false }: { colored?: boolean }) {
   const reduced = useReducedMotion();
   const [tick, setTick] = useState(0);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -180,7 +180,7 @@ export default function LogoBarV0() {
      (ported from cpohq-site ScrollReveal) */
   useEffect(() => {
     const el = gridRef.current;
-    if (!el) return;
+    if (!el || colored) return;
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
@@ -194,7 +194,7 @@ export default function LogoBarV0() {
     );
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [colored]);
 
   return (
     <section className="py-14">
@@ -202,7 +202,7 @@ export default function LogoBarV0() {
         <p className="text-center text-sm text-muted mb-8">{logoBar.line}</p>
         <div
           ref={gridRef}
-          className="v0-logogrid rounded-2xl border border-line overflow-hidden divide-y divide-line"
+          className={`v0-logogrid ${colored ? "v0-colored" : ""} rounded-2xl border border-line overflow-hidden divide-y divide-line`}
         >
           <SteppedRow items={ROW_A} reverse tick={tick} sweepBase={0.35} />
           <SteppedRow items={ROW_B} reverse={false} tick={tick} sweepBase={0.55} />
