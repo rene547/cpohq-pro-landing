@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { community } from "@/lib/content-v1";
 import Reveal from "@/components/Reveal";
 import AsciiField from "@/components/AsciiField";
@@ -25,12 +26,7 @@ const ARTIFACTS: Artifact[] = [
     badge: "Members only",
     badgeTone: "purple",
     offset: "md:mr-16",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden>
-        <rect x="5" y="10" width="12" height="8.5" rx="2" {...iconStroke} />
-        <path d="M7.5 10V7.5a3.5 3.5 0 017 0V10M11 13.5v2" {...iconStroke} />
-      </svg>
-    ),
+    icon: <Image src="/icons/3d/lock.png" alt="" width={56} height={56} className="object-contain" />,
     badgeIcon: (
       <svg width="13" height="13" viewBox="0 0 13 13" aria-hidden>
         <circle cx="4.6" cy="4.6" r="2" {...iconStroke} strokeWidth="1.2" />
@@ -44,11 +40,7 @@ const ARTIFACTS: Artifact[] = [
     badge: "2,400 data points",
     badgeTone: "blue",
     offset: "md:ml-10 md:mr-6",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden>
-        <path d="M6 17.5v-4M11 17.5v-8M16 17.5V4.5" {...iconStroke} strokeWidth="2.2" />
-      </svg>
-    ),
+    icon: <Image src="/icons/3d/bar-chart.png" alt="" width={56} height={56} className="object-contain" />,
     badgeIcon: (
       <svg width="13" height="13" viewBox="0 0 13 13" aria-hidden>
         <circle cx="6.5" cy="6.5" r="1.4" fill="currentColor" />
@@ -65,11 +57,7 @@ const ARTIFACTS: Artifact[] = [
     badge: "Proprietary",
     badgeTone: "purple",
     offset: "md:ml-20",
-    icon: (
-      <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden>
-        <path d="M11 5.5C9.5 4.2 7.5 3.8 4.5 4v13c3-.2 5 .2 6.5 1.5 1.5-1.3 3.5-1.7 6.5-1.5V4c-3-.2-5 .2-6.5 1.5zM11 5.5V18" {...iconStroke} />
-      </svg>
-    ),
+    icon: <Image src="/icons/3d/open-book.png" alt="" width={56} height={56} className="object-contain" />,
     badgeIcon: (
       <svg width="13" height="13" viewBox="0 0 13 13" aria-hidden>
         <path d="M6.5 1.5l1.2 3.3 3.3 1.2-3.3 1.2-1.2 3.3-1.2-3.3-3.3-1.2 3.3-1.2z" fill="currentColor" />
@@ -112,7 +100,8 @@ export default function CommunityV1() {
                 className={`${a.offset} rounded-[22px] bg-white/80 backdrop-blur border border-white/70 shadow-[0_2px_6px_rgba(23,32,64,0.04),0_18px_44px_rgba(23,32,64,0.08)] p-6 md:p-7`}
               >
                 <div className="flex items-start gap-5">
-                  <span className="shrink-0 flex size-14 items-center justify-center rounded-full bg-[#f1edff] text-[#6d5ef8] shadow-[inset_0_0_0_1px_rgba(109,94,248,0.08)]">
+                  {/* 3D icon fills the old 56px badge slot, no circle behind it */}
+                  <span className="shrink-0 flex size-14 items-center justify-center">
                     {a.icon}
                   </span>
                   <div className="flex-1 min-w-0">
