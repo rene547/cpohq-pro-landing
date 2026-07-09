@@ -159,7 +159,7 @@ export function ShellNavbar({ logo, links, cta, secondaryCta, className }: Shell
     <header
       className={cn(
         "sticky top-0 z-50 [--nav-bg:hsl(0_0%_100%/0.72)] [--nav-blur:14px] [--nav-height:64px] md:[--nav-height:72px]",
-        "grid h-[var(--nav-height)] w-full grid-cols-[1fr_auto] items-center gap-4 md:grid-cols-[1fr_auto_1fr]",
+        "h-[var(--nav-height)] w-full",
         "bg-[var(--nav-bg)] text-[var(--nav-fg,inherit)] [-webkit-backdrop-filter:saturate(140%)_blur(var(--nav-blur))] [backdrop-filter:saturate(140%)_blur(var(--nav-blur))]",
         "pl-[max(1.25rem,env(safe-area-inset-left))] pr-[max(1.25rem,env(safe-area-inset-right))]",
         "border-b transition-[border-color,box-shadow] duration-300 motion-reduce:transition-none",
@@ -169,11 +169,14 @@ export function ShellNavbar({ logo, links, cta, secondaryCta, className }: Shell
         className
       )}
     >
-      {/* Height-locked logo slot: the bar sizes the logo, never the reverse. */}
+      {/* CPOHQ divergence: bar spans the viewport, contents cap at 1200px. */}
+      <div className="mx-auto grid h-full w-full max-w-[1200px] grid-cols-[1fr_auto] items-center gap-4 md:grid-cols-[1fr_auto_1fr]">
+      {/* Height-locked logo slot: the bar sizes the logo, never the reverse.
+          CPOHQ divergence: logo renders 20% taller than its 48px slot. */}
       <Link
         href="/"
         aria-label="Home"
-        className="flex h-[calc(var(--nav-height)-24px)] max-w-[min(40vw,240px)] items-center justify-self-start [&_img]:h-full [&_img]:w-auto [&_img]:object-contain [&_svg]:h-full [&_svg]:w-auto"
+        className="flex h-[calc(var(--nav-height)-24px)] max-w-[min(40vw,240px)] items-center justify-self-start [&_img]:h-[120%] [&_img]:w-auto [&_img]:object-contain [&_svg]:h-[120%] [&_svg]:w-auto"
       >
         {logo}
       </Link>
@@ -230,6 +233,7 @@ export function ShellNavbar({ logo, links, cta, secondaryCta, className }: Shell
             <path d="M3 6h18M3 12h18M3 18h18" />
           </svg>
         </button>
+      </div>
       </div>
 
       {/* Menu portals to <body>: ancestor overflow/transform can't clip it. */}
