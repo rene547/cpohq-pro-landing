@@ -1,6 +1,7 @@
 import { chiefOfStaff } from "@/lib/content-v1";
 import Reveal from "@/components/Reveal";
 import AsciiField from "@/components/AsciiField";
+import SlackDemoV1 from "@/components/SlackDemoV1";
 
 /* v1 chief of staff, per client feedback 2026-07-09: mirrors the Community
    section's grammar -- written content on the left (headline, lead, the
@@ -36,6 +37,13 @@ export default function ChiefOfStaffV1() {
               <DarkCard>{visual}</DarkCard>
             </div>
           ))}
+        </Reveal>
+      </div>
+
+      {/* animated Slack scene: the chief of staff answering where work happens */}
+      <div className="mx-auto max-w-[1200px] px-6 pb-28 -mt-10">
+        <Reveal>
+          <SlackDemoV1 />
         </Reveal>
       </div>
     </section>
