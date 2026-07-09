@@ -67,9 +67,21 @@ function Card({
   children: React.ReactNode;
   onHover?: (h: boolean) => void;
 }) {
+  /* the card is a jump-to-section link: smooth-scroll to the anchor (the
+     target sections carry scroll-mt-16 for the sticky nav) */
+  const onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const el = document.querySelector(href);
+    if (!el) return;
+    e.preventDefault();
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+    history.pushState(null, "", href);
+  };
+
   return (
     <a
       href={href}
+      onClick={onClick}
       onMouseEnter={() => onHover?.(true)}
       onMouseLeave={() => onHover?.(false)}
       className="group relative flex flex-col overflow-hidden rounded-brand border border-line bg-[#f2f2f0] min-h-[540px] transition hover:shadow-xl focus-visible:outline-2 focus-visible:outline-accent"
@@ -80,11 +92,12 @@ function Card({
           <p className="mt-2 text-sm text-muted max-w-[26ch]">{line}</p>
         </div>
         <span
-          className="shrink-0 flex size-9 items-center justify-center rounded-[10px] bg-white text-accent transition group-hover:bg-accent group-hover:text-accent-ink"
+          className="shrink-0 flex size-9 items-center justify-center rounded-[10px] bg-white text-accent transition group-hover:bg-accent group-hover:text-accent-ink group-hover:translate-y-0.5"
           aria-hidden
         >
+          {/* down arrow: jump to section */}
           <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-            <path d="M8 1h4v4M12 1L7 6M5 12H1V8M1 12l5-5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M6.5 1v10.5M1.5 7l5 5 5-5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </span>
       </div>

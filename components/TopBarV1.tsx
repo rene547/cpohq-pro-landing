@@ -11,8 +11,11 @@ import { investorBanner } from "@/lib/content-v1";
 
 const FIRMS: { name: string; file: string; height: string }[] = [
   { name: "EQT", file: "eqt.svg", height: "h-[13px]" },
-  { name: "Menlo Ventures", file: "menlo-ventures.svg", height: "h-4" },
+  { name: "Menlo Ventures", file: "menlo-ventures-white.svg", height: "h-4" },
 ];
+
+/* near-black, not pure #000 -- reads as black without the harshness */
+const BAR_BG = "#0b0d12";
 
 const ANGELS = ["adam-grant.jpg", "investor-2.jpg"];
 
@@ -33,8 +36,9 @@ export default function TopBarV1() {
   return (
     <div
       aria-hidden={past}
-      className={`overflow-hidden bg-white transition-[height,border-color] duration-300 ease-out motion-reduce:transition-none border-b ${
-        past ? "h-0 border-transparent" : "h-10 border-line"
+      style={{ backgroundColor: BAR_BG }}
+      className={`overflow-hidden transition-[height] duration-300 ease-out motion-reduce:transition-none ${
+        past ? "h-0" : "h-10"
       }`}
     >
       <div className="mx-auto flex h-10 max-w-[1200px] items-center justify-center gap-3 px-6">
@@ -46,14 +50,14 @@ export default function TopBarV1() {
               alt=""
               width={22}
               height={22}
-              className="rounded-full ring-2 ring-white"
+              className="rounded-full ring-2 ring-[#0b0d12]"
             />
           ))}
         </div>
-        <p className="whitespace-nowrap text-xs text-muted sm:text-sm">
+        <p className="whitespace-nowrap text-xs text-white/85 sm:text-sm">
           {investorBanner.line}
         </p>
-        <span className="hidden h-4 w-px bg-line sm:block" aria-hidden />
+        <span className="hidden h-4 w-px bg-white/25 sm:block" aria-hidden />
         <div className="hidden items-center gap-4 sm:flex">
           {FIRMS.map((f) => (
             /* eslint-disable-next-line @next/next/no-img-element */
