@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { logoBar } from "@/lib/content-v1";
+import aspects from "@/lib/logo-aspects.json";
 
 /* v1 logo bar: boxed grid forked from v0. Client feedback 2026-07-09: logos
    render in their real brand colors at rest (no grayscale, no hover glow, no
@@ -12,6 +13,16 @@ import { logoBar } from "@/lib/content-v1";
 const VISIBLE = 8;
 const STEP_MS = 3000;
 const ACCENT = "#336CF0";
+
+/* v1 serves tight-cropped copies from /logos/v1 (originals keep whitespace
+   in their viewBoxes, which made the 18px cell height apply to the padded
+   canvas instead of the artwork). Height is area-normalized from each
+   logo's real aspect ratio so square lockups (Miro, Notion) don't read
+   tiny next to wide wordmarks; max-width still caps the very wide ones. */
+function logoHeight(file: string): number {
+  const ar = (aspects as Record<string, number>)[file] ?? 3.5;
+  return Math.round(Math.min(25, Math.max(17, 38 / Math.sqrt(ar))));
+}
 
 /* [name, file, brand color] -- strongest names front-loaded so the first
    visible window reads as the A-team. Brand colors are kept for reference
@@ -156,7 +167,13 @@ function SteppedRow({
             }
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`/logos/${file}`} alt={i < n ? name : ""} aria-hidden={i >= n} loading="lazy" />
+            <img
+              src={`/logos/v1/${file}`}
+              alt={i < n ? name : ""}
+              aria-hidden={i >= n}
+              loading="lazy"
+              style={{ height: logoHeight(file) }}
+            />
           </div>
         ))}
       </div>

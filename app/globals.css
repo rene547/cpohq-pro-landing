@@ -303,11 +303,14 @@ body {
   }
 }
 
-/* v1: logos fixed in their real brand colors -- no grayscale, no hover glow */
+/* v1: logos fixed in their real brand colors -- no grayscale, no hover glow.
+   Heights come inline (area-normalized per logo); the width cap gets a bit
+   more room since the v1 sources are tight-cropped. */
 .v1-logofixed .v0-logocell img {
   filter: none;
   opacity: 1;
   transition: none;
+  max-width: 112px;
 }
 
 .v1-logofixed .v0-logocell::before {
