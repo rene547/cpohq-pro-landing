@@ -2,10 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { variants } from "@/lib/variants";
 
-/* Internal index for the review round: pick a direction, click in. */
+/* Internal index: V0 is the frozen baseline, V1 is the working fork. */
 export default function Home() {
   return (
-    <div className="theme-v1 page flex-1 flex items-center justify-center px-6 py-20">
+    <div className="theme-v0 page flex-1 flex items-center justify-center px-6 py-20">
       <main className="w-full max-w-2xl">
         <Image
           src="/brand/cpohqlogo-horizontal-black.png"
@@ -16,11 +16,10 @@ export default function Home() {
           priority
         />
         <h1 className="font-display text-3xl mt-8 tracking-tight">
-          Landing page directions.
+          Landing page versions.
         </h1>
         <p className="mt-2 text-muted">
-          Same structure and copy in all five. Only the skin changes. Pick one to
-          double down on.
+          V0 is locked as approved. Client feedback lands on V1.
         </p>
         <ul className="mt-10 space-y-3">
           {variants.map((v) => (

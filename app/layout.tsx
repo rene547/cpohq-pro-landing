@@ -1,53 +1,9 @@
 import type { Metadata } from "next";
-import {
-  Archivo,
-  Bricolage_Grotesque,
-  Figtree,
-  Fraunces,
-  Geist,
-  Instrument_Sans,
-  Manrope,
-  Newsreader,
-} from "next/font/google";
+import { Geist } from "next/font/google";
 import "./globals.css";
-
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
-  subsets: ["latin"],
-});
-
-const instrumentSans = Instrument_Sans({
-  variable: "--font-instrument-sans",
-  subsets: ["latin"],
-});
 
 const geist = Geist({
   variable: "--font-geist",
-  subsets: ["latin"],
-});
-
-const archivo = Archivo({
-  variable: "--font-archivo",
-  subsets: ["latin"],
-});
-
-const bricolage = Bricolage_Grotesque({
-  variable: "--font-bricolage",
-  subsets: ["latin"],
-});
-
-const figtree = Figtree({
-  variable: "--font-figtree",
-  subsets: ["latin"],
-});
-
-const newsreader = Newsreader({
-  variable: "--font-newsreader",
-  subsets: ["latin"],
-});
-
-const manrope = Manrope({
-  variable: "--font-manrope",
   subsets: ["latin"],
 });
 
@@ -63,20 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={[
-        fraunces.variable,
-        instrumentSans.variable,
-        geist.variable,
-        archivo.variable,
-        bricolage.variable,
-        figtree.variable,
-        newsreader.variable,
-        manrope.variable,
-        "h-full antialiased",
-      ].join(" ")}
-    >
+    <html lang="en" className={`${geist.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
