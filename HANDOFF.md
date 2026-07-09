@@ -21,7 +21,7 @@ vercel deploy --prod --yes   # deploy (Vercel CLI, already linked)
   - Sections: `components/sections/*V1.tsx` (Hero, LogoBar, HighlightCards, LoveWall, Community, ChiefOfStaff, TalkToUs)
   - Copy: `lib/content-v1.ts`
   - Theme tokens: `.theme-v1` in `app/globals.css`
-- Still **shared** between v0 and v1 (fork into a V1 copy BEFORE editing if feedback touches them): `Agents.tsx`, `Security.tsx`, `Footer.tsx`, `components/AsciiField.tsx`, `components/Strands.tsx`, `components/ShellNavbar.tsx`, `components/Reveal.tsx`, `JoinModal.tsx`, and the `v0-*` / `cos-*` / `avatar-orb` CSS blocks in `globals.css`.
+- Still **shared** between v0 and v1 (fork into a V1 copy BEFORE editing if feedback touches them): `Agents.tsx`, `Security.tsx`, `components/AsciiField.tsx`, `components/Strands.tsx`, `components/ShellNavbar.tsx`, `components/Reveal.tsx`, `JoinModal.tsx`, and the `v0-*` / `cos-*` / `avatar-orb` CSS blocks in `globals.css`. (`Footer.tsx` was forked to `FooterV1.tsx` 2026-07-09.)
 
 ## What's done
 

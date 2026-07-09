@@ -12,12 +12,19 @@ import { investorBanner } from "@/lib/content-v1";
 const FIRMS: { name: string; file: string; height: string }[] = [
   { name: "EQT", file: "eqt.svg", height: "h-[13px]" },
   { name: "Menlo Ventures", file: "menlo-ventures-white.svg", height: "h-4" },
+  { name: "Accel", file: "accel-white.svg", height: "h-3.5" },
 ];
 
-/* near-black, not pure #000 -- reads as black without the harshness */
-const BAR_BG = "#0b0d12";
+/* brand blue (matches --accent in .theme-v1) */
+const BAR_BG = "#336cf0";
 
-const ANGELS = ["adam-grant.jpg", "investor-2.jpg"];
+const ANGELS = [
+  "adam-grant.jpg",
+  "investor-2.jpg",
+  "pamela-thomas-graham.jpg",
+  "lorna-hagen.jpg",
+  "nir-eyal.jpg",
+];
 
 export default function TopBarV1() {
   const [past, setPast] = useState(false);
@@ -50,7 +57,7 @@ export default function TopBarV1() {
               alt=""
               width={22}
               height={22}
-              className="rounded-full ring-2 ring-[#0b0d12]"
+              className="rounded-full ring-2 ring-[#336cf0]"
             />
           ))}
         </div>
@@ -68,6 +75,7 @@ export default function TopBarV1() {
               className={`${f.height} w-auto`}
             />
           ))}
+          <span className="text-xs text-white/70">+ hundreds more</span>
         </div>
       </div>
     </div>
