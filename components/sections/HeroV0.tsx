@@ -1,20 +1,28 @@
 "use client";
 
 import { useState } from "react";
+import UnicornScene from "unicornstudio-react/next";
 import { hero } from "@/lib/content";
 import Reveal from "@/components/Reveal";
 
 /* v0 hero: Stripe anatomy under the hive-shell navbar (rendered by Landing).
-   Two-tone headline with "AI superpowers" carrying the gradient. */
+   Background is a Unicorn Studio WebGL scene; text column sits above it. */
 export default function HeroV0({ onJoin }: { onJoin: (email: string) => void }) {
   const [email, setEmail] = useState("");
 
   return (
     <section className="relative overflow-hidden">
-      <div className="ribbon-wrap" aria-hidden>
-        <div className="ribbon ribbon-3" />
-        <div className="ribbon ribbon-1" />
-        <div className="ribbon ribbon-2" />
+      <div className="absolute inset-0" aria-hidden>
+        <UnicornScene
+          projectId="nJ0w2R0GbPeCwizm5cWx"
+          width="100%"
+          height="100%"
+          scale={1}
+          dpi={1.5}
+          sdkUrl="https://cdn.jsdelivr.net/gh/hiunicornstudio/unicornstudio.js@v2.2.6/dist/unicornStudio.umd.js"
+          ariaLabel=""
+          altText=""
+        />
       </div>
 
       <div className="relative z-10 mx-auto max-w-6xl px-6 pt-24 pb-32 md:pt-32 md:pb-40">
