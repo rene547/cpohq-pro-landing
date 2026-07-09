@@ -88,15 +88,7 @@ function Card({
     >
       <div className="relative z-10 flex items-start justify-between gap-4 p-7 pb-0">
         <div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          {/* trimmed wordmark (the brand PNG is 71% padding) at ~80% of the
-              24px title size, so its weight reads equal to the title */}
-          <img
-            src="/brand/cpohq-wordmark-trim.png"
-            alt="CPOHQ"
-            className="h-[19px] w-auto opacity-70"
-          />
-          <h3 className="mt-1.5 text-2xl font-medium tracking-tight">{title}</h3>
+          <h3 className="text-2xl font-medium tracking-tight">{title}</h3>
           <p className="mt-2 text-sm text-muted max-w-[30ch]">{line}</p>
         </div>
         <span
@@ -205,6 +197,12 @@ function PortraitSphere({ hoverRef }: { hoverRef: React.MutableRefObject<boolean
         mat.map = paintTile(img, i);
         mat.needsUpdate = true;
         if (old) old.dispose();
+      };
+      /* portraits are external (Unsplash); a flaky request should not leave
+         a gradient placeholder for the whole session -- retry a few times */
+      let attempts = 0;
+      img.onerror = () => {
+        if (attempts++ < 3) setTimeout(() => { img.src = `${img.src.split("&r=")[0]}&r=${attempts}`; }, 1500 * attempts);
       };
       img.src = `https://images.unsplash.com/${PORTRAIT_IDS[i % PORTRAIT_IDS.length]}?w=168&h=168&fit=crop&crop=faces&q=72`;
     }
@@ -344,23 +342,23 @@ function DashboardsVisual() {
 
 /* ---------- section ---------- */
 
-/* Client copy 2026-07-09. Testing the wordmark-lockup variant: the CPOHQ
-   wordmark nests above each title, so card 1 is "Community" (with wordmark
-   it must never read "CPOHQ Community" -- one or the other). */
+/* Client copy 2026-07-09. Wordmark-lockup test reverted same day: plain
+   text titles with the CPOHQ prefix instead (per the never-both rule, no
+   wordmark image above). */
 const CARDS = [
   {
     id: "community",
-    title: "Community",
+    title: "CPOHQ Community",
     line: "30,000 confidential discussions. Whatever you're facing, a CPO here has already faced it.",
   },
   {
     id: "chief-of-staff",
-    title: "AI Chief of Staff",
+    title: "CPOHQ AI Chief of Staff",
     line: "We built what a top 1% CPO with top 1% AI skills (rare!) and top 1% free time (impossible!) would build for themselves.",
   },
   {
     id: "agents",
-    title: "Team of AI agents",
+    title: "CPOHQ Team of AI agents",
     line: "An agent on every workflow, from HRBPs to people analytics to L&D.",
   },
 ];
