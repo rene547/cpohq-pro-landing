@@ -13,7 +13,7 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 /* v1 love wall, upgraded per client feedback 2026-07-09: quote cards carry
    member headshots (black initials circle when none is on file), an accent
    quote mark, and a hover lift; one featured
-   quote goes dark navy for contrast; photo cards read as real clip
+   quote goes brand blue for contrast; photo cards read as real clip
    thumbnails (center play, duration chip, caption scrim); and the three
    columns drift at slightly different rates while scrolling (scrub-driven,
    so the wall idles still, is flush at section center, and reduced motion
@@ -68,7 +68,7 @@ function QuoteCard({ item }: { item: Extract<Item, { kind: "quote" }> }) {
       data-reveal-item
       className={`relative rounded-brand border p-6 ${cardShadow} ${cardHover} ${
         dark
-          ? "bg-[#0b0d12] border-[#0b0d12] text-white"
+          ? "bg-accent border-accent text-white"
           : "bg-white border-line/70 hover:border-accent/35"
       }`}
     >
@@ -102,7 +102,7 @@ function QuoteCard({ item }: { item: Extract<Item, { kind: "quote" }> }) {
         </span>
         <span>
           <span className="block text-sm font-medium">{item.name}</span>
-          <span className={`block text-xs ${dark ? "text-white/55" : "text-muted"}`}>
+          <span className={`block text-xs ${dark ? "text-white/70" : "text-muted"}`}>
             {item.role}
           </span>
         </span>
