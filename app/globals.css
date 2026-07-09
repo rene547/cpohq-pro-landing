@@ -453,182 +453,185 @@ body {
 
 /* ---------- v1 agents ---------- */
 
-.v1a-aura {
-  position: absolute;
-  inset: -10% -20% auto -20%;
-  height: 70%;
-  opacity: 0.5;
-  filter: blur(46px);
-  pointer-events: none;
+/* the section lives in one large rounded card */
+.v1a-card {
+  position: relative;
+  border-radius: 28px;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
+  box-shadow:
+    0 40px 90px -50px rgba(10, 37, 64, 0.28),
+    inset 0 1px 0 #ffffff;
+  padding: clamp(2rem, 5vw, 4.25rem);
+  overflow: hidden;
 }
 
-/* --- isometric agent field --- */
-.v1a-iso-scene {
+/* --- isometric field: a 2D projection (rotate + squash), no preserve-3d,
+       so paint order is deterministic and labels stay crisp --- */
+.v1a-field {
   position: relative;
   width: 100%;
   max-width: 30rem;
   margin-inline: auto;
-  aspect-ratio: 10 / 8;
-  perspective: 1200px;
+  aspect-ratio: 100 / 78;
   container-type: inline-size;
 }
 
-.v1a-iso-plane {
+/* faint wash of brand light behind the field */
+.v1a-field-glow {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 96%;
-  aspect-ratio: 1;
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(7, 1fr);
-  gap: 3%;
-  transform: translate(-50%, -50%) rotateX(55deg) rotateZ(-45deg);
-  transform-style: preserve-3d;
-  transition: transform 0.9s ease;
+  inset: -14%;
+  background: radial-gradient(
+    48% 44% at 50% 48%,
+    rgba(51, 108, 240, 0.09) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
 }
 
-/* the whole field leans up gently while the cursor is over it */
-.v1a-iso-scene:hover .v1a-iso-plane {
-  transform: translate(-50%, -50%) rotateX(51deg) rotateZ(-45deg);
+.v1a-cell {
+  position: absolute;
+  width: 13%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+}
+
+.v1a-cell-you {
+  width: 16.5%;
+}
+
+/* breathing halo under the You tile, on the unskewed cell */
+.v1a-cell-you::before {
+  content: "";
+  position: absolute;
+  inset: -48% -36%;
+  background: radial-gradient(
+    50% 42% at 50% 56%,
+    rgba(51, 108, 240, 0.38) 0%,
+    transparent 70%
+  );
+  filter: blur(6px);
+  animation: v1a-halo 7s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.v1a-bob {
+  width: 100%;
+  height: 100%;
+}
+
+.v1a-bob-live {
+  animation: v1a-bob 9s ease-in-out infinite;
 }
 
 .v1a-tile {
-  position: relative;
-  border-radius: 22%;
-  background: linear-gradient(150deg, #ffffff 0%, #e7eef7 100%);
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  border-radius: 26%;
+  transform: rotate(45deg) scaleY(0.58);
+  background: linear-gradient(155deg, #ffffff 0%, #e9eff7 100%);
   box-shadow:
-    inset 0 2px 2px rgba(255, 255, 255, 0.95),
+    inset 0 2px 3px rgba(255, 255, 255, 0.95),
     inset 0 0 0 1px var(--line),
-    inset 0 -6px 10px rgba(10, 37, 64, 0.05),
-    0 18px 34px -16px rgba(10, 37, 64, 0.4);
+    inset 0 -8px 12px rgba(10, 37, 64, 0.05),
+    0 14px 22px -14px rgba(10, 37, 64, 0.3);
   opacity: var(--fade, 1);
-  transform-style: preserve-3d;
   transition:
-    transform 0.45s ease,
-    opacity 0.45s ease,
-    box-shadow 0.45s ease;
+    transform 0.4s ease,
+    opacity 0.4s ease,
+    box-shadow 0.4s ease;
 }
 
-/* any tile wakes and lifts under the cursor */
+/* any tile wakes and lifts a touch under the cursor */
 .v1a-tile:hover {
   opacity: 1;
-  transform: translateZ(10px);
+  transform: translateY(-4px) rotate(45deg) scaleY(0.58);
 }
 
 /* agent tiles sit slightly proud of the field */
 .v1a-tile-agent {
   background: #ffffff;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    inset 0 0 0 1px color-mix(in srgb, var(--accent) 24%, var(--line)),
-    0 16px 34px -18px rgba(10, 37, 64, 0.4);
-  transform: translateZ(9px);
+    inset 0 2px 3px rgba(255, 255, 255, 0.95),
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 20%, var(--line)),
+    inset 0 -8px 12px rgba(10, 37, 64, 0.04),
+    0 18px 28px -16px rgba(10, 37, 64, 0.35);
+  transform: translateY(-3px) rotate(45deg) scaleY(0.58);
 }
 
 .v1a-tile-agent:hover {
-  transform: translateZ(20px);
+  transform: translateY(-8px) rotate(45deg) scaleY(0.58);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, var(--line)),
-    0 0 24px color-mix(in srgb, var(--accent) 20%, transparent),
-    0 20px 40px -18px rgba(10, 37, 64, 0.45);
+    inset 0 2px 3px rgba(255, 255, 255, 0.95),
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, var(--line)),
+    0 0 20px color-mix(in srgb, var(--accent) 16%, transparent),
+    0 22px 34px -16px rgba(10, 37, 64, 0.4);
 }
 
 /* the You tile: the one saturated object in the field */
 .v1a-tile-you {
-  background: radial-gradient(130% 130% at 30% 24%, #6f97ff 0%, #336cf0 52%, #1f47b8 100%);
+  background: radial-gradient(
+    120% 140% at 32% 22%,
+    #7ba0ff 0%,
+    #336cf0 52%,
+    #2050c8 100%
+  );
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    0 0 26px rgba(51, 108, 240, 0.4),
-    0 0 70px rgba(51, 108, 240, 0.22),
-    0 22px 44px -16px rgba(31, 71, 184, 0.5);
-  transform: translateZ(28px) scale(1.32);
+    inset 0 2px 3px rgba(255, 255, 255, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.25),
+    inset 0 -10px 16px rgba(16, 44, 120, 0.35),
+    0 18px 30px -12px rgba(31, 71, 184, 0.55),
+    0 0 40px rgba(51, 108, 240, 0.3);
+  transform: translateY(-6px) rotate(45deg) scaleY(0.58);
 }
 
 .v1a-tile-you:hover {
-  transform: translateZ(40px) scale(1.36);
+  transform: translateY(-11px) rotate(45deg) scaleY(0.58);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    0 0 36px rgba(51, 108, 240, 0.55),
-    0 0 100px rgba(51, 108, 240, 0.3),
-    0 28px 52px -16px rgba(31, 71, 184, 0.55);
+    inset 0 2px 3px rgba(255, 255, 255, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.25),
+    inset 0 -10px 16px rgba(16, 44, 120, 0.35),
+    0 24px 38px -12px rgba(31, 71, 184, 0.6),
+    0 0 60px rgba(51, 108, 240, 0.4);
 }
 
-/* breathing halo under the You tile */
-.v1a-tile-you::after {
-  content: "";
-  position: absolute;
-  inset: -45%;
-  border-radius: 9999px;
-  background: radial-gradient(circle, rgba(51, 108, 240, 0.35) 0%, transparent 62%);
-  transform: translateZ(-6px);
-  animation: v1a-halo 9s ease-in-out infinite;
-  pointer-events: none;
-}
-
-/* labels stand upright over their tiles (counter-rotates the plane) */
-.v1a-tag {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  display: flex;
+/* labels counter-rotate back to level, so text renders unskewed */
+.v1a-label {
+  display: inline-flex;
   align-items: center;
-  gap: 0.4em;
-  white-space: nowrap;
-  /* counter-rotate the plane, then lift the label so it stands on the
-     tile surface instead of sinking through it */
-  transform: translate(-50%, -50%) rotateZ(45deg) rotateX(-55deg)
-    translateY(-58%);
-  font-size: clamp(0.55rem, 3.4cqw, 0.8rem);
+  gap: 0.38em;
+  transform: scaleY(1.7241) rotate(-45deg);
+  font-size: clamp(0.62rem, 2.7cqw, 0.8rem);
   font-weight: 500;
-  color: var(--ink);
-  pointer-events: none;
-}
-
-/* the You label is a screen-space overlay on the scene, outside the 3D
-   context, so it can never be occluded by plane sorting. Its position
-   tracks the lifted You tile (scene center, nudged up by the lift). */
-.v1a-tag-you {
-  position: absolute;
-  left: 50%;
-  top: calc(50% - 4.5cqw);
-  transform: translate(-50%, -50%);
-  z-index: 1;
-  font-size: clamp(0.85rem, 5cqw, 1.1rem);
-  font-weight: 600;
   letter-spacing: 0.01em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.v1a-label-you {
+  font-size: clamp(0.85rem, 3.6cqw, 1.05rem);
+  font-weight: 600;
   color: #ffffff;
-  text-shadow: 0 1px 10px rgba(31, 71, 184, 0.6);
-  pointer-events: none;
-  transition: top 0.9s ease;
+  text-shadow: 0 1px 6px rgba(16, 44, 120, 0.4);
 }
 
-/* follow the plane as it leans up on hover */
-.v1a-iso-scene:hover .v1a-tag-you {
-  top: calc(50% - 5.4cqw);
-}
-
-.v1a-tag-dot {
-  width: 0.42em;
-  height: 0.42em;
+.v1a-label-dot {
+  width: 0.4em;
+  height: 0.4em;
   border-radius: 9999px;
   background: var(--accent);
-  animation: v1a-dot 7s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(51, 108, 240, 0.5);
 }
 
-.v1a-tile-agent:hover .v1a-tag-dot {
-  animation: none;
-  opacity: 1;
+@keyframes v1a-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
 }
 
 @keyframes v1a-halo {
-  0%, 100% { opacity: 0.45; }
-  50% { opacity: 1; }
-}
-
-@keyframes v1a-dot {
-  0%, 100% { opacity: 0.45; }
+  0%, 100% { opacity: 0.5; }
   50% { opacity: 1; }
 }
 
@@ -654,9 +657,9 @@ body {
 }
 
 .v1a-point:hover {
-  background: var(--card);
+  background: #ffffff;
   border-color: var(--line);
-  transform: translateX(4px);
+  transform: translateX(3px);
 }
 
 .v1a-mark {
@@ -667,7 +670,7 @@ body {
   height: 1.6rem;
   margin-top: 0.15rem;
   border-radius: 7px;
-  background: color-mix(in srgb, var(--accent) 10%, var(--bg));
+  background: color-mix(in srgb, var(--accent) 10%, #ffffff);
   border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
   transition:
     background-color 0.4s ease,
@@ -683,8 +686,8 @@ body {
 }
 
 .v1a-point:hover .v1a-mark {
-  background: color-mix(in srgb, var(--accent) 16%, var(--bg));
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 9%, transparent);
+  background: color-mix(in srgb, var(--accent) 16%, #ffffff);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 8%, transparent);
 }
 
 .v1a-point:hover .v1a-mark-dot {
@@ -702,31 +705,23 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .v1a-tile-you::after,
-  .v1a-tag-dot {
+  .v1a-bob-live,
+  .v1a-cell-you::before {
     animation: none;
   }
-  .v1a-iso-plane,
   .v1a-tile,
-  .v1a-tag-you,
   .v1a-point,
   .v1a-mark {
     transition: none;
   }
-  .v1a-iso-scene:hover .v1a-iso-plane {
-    transform: translate(-50%, -50%) rotateX(55deg) rotateZ(-45deg);
-  }
-  .v1a-iso-scene:hover .v1a-tag-you {
-    top: calc(50% - 4.5cqw);
-  }
   .v1a-tile:hover {
-    transform: none;
+    transform: rotate(45deg) scaleY(0.58);
   }
   .v1a-tile-agent:hover {
-    transform: translateZ(9px);
+    transform: translateY(-3px) rotate(45deg) scaleY(0.58);
   }
   .v1a-tile-you:hover {
-    transform: translateZ(28px) scale(1.32);
+    transform: translateY(-6px) rotate(45deg) scaleY(0.58);
   }
   .v1a-point:hover {
     transform: none;

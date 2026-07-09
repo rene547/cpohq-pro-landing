@@ -2,28 +2,35 @@ import { agents } from "@/lib/content-v1";
 import Reveal from "@/components/Reveal";
 
 /* v1 fork of Agents.tsx. Copy is frozen (client: do not change wording);
-   this is a visual uplift only. The diagram is an isometric tile field:
-   a receding plane of frosted tiles, one glowing brand-blue "You" tile at
-   the center, and seven raised agent tiles around it. Labels stand upright
-   over their tiles. Tiles wake and lift under the cursor; the whole plane
-   leans up slightly on hover. Slow at idle, reacts on hover; reduced-motion
-   goes still. All motion is CSS -- this stays a server component. */
+   this is a visual pass only. The section sits in a large rounded card:
+   copy on the left, an isometric tile field on the right. The field is a
+   2D projection (rotate + squash, labels counter-rotated back to level),
+   not preserve-3d, so paint order is deterministic and text stays crisp.
+   Motion is minimal: the blue You tile's halo breathes, agent tiles drift
+   gently, tiles lift a touch on hover. Reduced-motion goes still. All CSS,
+   still a server component. */
 
-const GRID = 7;
-const CENTER = 3;
+const GRID = 5;
+const CENTER = 2;
+const SIDE = 13; /* tile side, % of field width (diamond is SIDE * sqrt2) */
+const RATIO = 0.58; /* isometric vertical squash */
+const GAP = 1.08; /* spacing factor between tile centers */
+const ASPECT = 0.78; /* field height / width */
 
-/* [row, col, label] -- a loose ring around the center tile */
+/* [row, col, label] -- a balanced ring around the center tile */
 const AGENT_POS: [number, number, string][] = [
-  [1, 2, "Comp"],
-  [1, 4, "Org"],
-  [2, 5, "Talent"],
-  [4, 5, "Rec"],
-  [5, 3, "Eng"],
-  [4, 1, "L&D"],
-  [2, 1, "Data"],
+  [1, 0, "Comp"],
+  [0, 1, "Org"],
+  [0, 3, "Talent"],
+  [3, 0, "Data"],
+  [1, 4, "Rec"],
+  [4, 1, "Eng"],
+  [3, 3, "L&D"],
 ];
 
-const TILES = Array.from({ length: GRID * GRID }, (_, i) => {
+const DIAMOND = SIDE * Math.SQRT2;
+
+const CELLS = Array.from({ length: GRID * GRID }, (_, i) => {
   const row = Math.floor(i / GRID);
   const col = i % GRID;
   const agentIdx = AGENT_POS.findIndex(([r, c]) => r === row && c === col);
@@ -33,87 +40,99 @@ const TILES = Array.from({ length: GRID * GRID }, (_, i) => {
     key: `${row}-${col}`,
     label: agentIdx >= 0 ? AGENT_POS[agentIdx][2] : null,
     isYou,
+    x: +(50 + (col - row) * (DIAMOND / 2) * GAP).toFixed(2),
+    y: +(50 + ((row + col - 2 * CENTER) * (DIAMOND * RATIO) * GAP) / 2 / ASPECT).toFixed(2),
+    /* lower rows paint over higher ones; the You tile floats above all */
+    z: isYou ? 10 : row + col,
     /* empty tiles fade toward the edges of the field */
-    fade: isYou || agentIdx >= 0 ? 1 : +Math.max(0.4, 1 - dist * 0.13).toFixed(2),
-    /* de-synced idle pulse so the agent dots never blink in lockstep */
-    delay: agentIdx >= 0 ? +(-(agentIdx * 1.3)).toFixed(1) : 0,
+    fade: isYou || agentIdx >= 0 ? 1 : +Math.max(0.35, 1 - dist * 0.22).toFixed(2),
+    /* de-synced drift so agent tiles never move in lockstep */
+    delay: agentIdx >= 0 ? +(-(agentIdx * 1.2)).toFixed(1) : 0,
   };
 });
 
 export default function AgentsV1() {
   return (
-    <section
-      id={agents.id}
-      className="v1a relative overflow-hidden mx-auto max-w-6xl px-6 py-28 scroll-mt-16"
-    >
-      <div className="v1a-aura aura" aria-hidden />
-      <div className="relative grid md:grid-cols-2 gap-14 items-center">
-        <Reveal className="order-2 md:order-1">
-          <IsoGrid />
-        </Reveal>
+    <section id={agents.id} className="v1a mx-auto max-w-6xl px-6 py-28 scroll-mt-16">
+      <div className="v1a-card">
+        <div className="relative grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+          <Reveal delay={0.05} staggerChildren={0.09}>
+            <h2
+              data-reveal-item
+              className="font-display text-3xl md:text-4xl tracking-tight text-balance"
+            >
+              {agents.headline}
+            </h2>
+            <p data-reveal-item className="mt-4 text-lg text-muted max-w-md">
+              {agents.sub}
+            </p>
+            <ul className="v1a-points mt-9">
+              {agents.points.map((p) => (
+                <li key={p.title} data-reveal-item className="v1a-point">
+                  <span className="v1a-mark" aria-hidden>
+                    <span className="v1a-mark-dot" />
+                  </span>
+                  <div className="v1a-point-body">
+                    <h3 className="v1a-point-title">{p.title}</h3>
+                    <p className="v1a-point-line">{p.line}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
 
-        <Reveal delay={0.1} staggerChildren={0.09} className="order-1 md:order-2">
-          <h2
-            data-reveal-item
-            className="font-display text-3xl md:text-5xl tracking-tight text-balance"
-          >
-            {agents.headline}
-          </h2>
-          <p data-reveal-item className="mt-4 text-lg text-muted max-w-md">
-            {agents.sub}
-          </p>
-          <ul className="v1a-points mt-9">
-            {agents.points.map((p) => (
-              <li key={p.title} data-reveal-item className="v1a-point">
-                <span className="v1a-mark" aria-hidden>
-                  <span className="v1a-mark-dot" />
-                </span>
-                <div className="v1a-point-body">
-                  <h3 className="v1a-point-title">{p.title}</h3>
-                  <p className="v1a-point-line">{p.line}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </Reveal>
+          <Reveal delay={0.15}>
+            <IsoField />
+          </Reveal>
+        </div>
       </div>
     </section>
   );
 }
 
-function IsoGrid() {
+function IsoField() {
   return (
     <div
-      className="v1a-iso-scene"
+      className="v1a-field"
       role="img"
-      aria-label="A grid of tiles: seven AI agents arranged around one people leader"
+      aria-label="Seven AI agents arranged around one people leader"
     >
-      <div className="v1a-iso-plane" aria-hidden>
-        {TILES.map((t) => (
+      <div className="v1a-field-glow" aria-hidden />
+      {CELLS.map((t) => (
+        <div
+          key={t.key}
+          className={"v1a-cell" + (t.isYou ? " v1a-cell-you" : "")}
+          style={
+            {
+              left: `${t.x}%`,
+              top: `${t.y}%`,
+              zIndex: t.z,
+              "--fade": t.fade,
+            } as React.CSSProperties
+          }
+        >
           <div
-            key={t.key}
-            className={
-              "v1a-tile" +
-              (t.isYou ? " v1a-tile-you" : t.label ? " v1a-tile-agent" : "")
-            }
-            style={{ "--fade": t.fade } as React.CSSProperties}
+            className={"v1a-bob" + (t.label ? " v1a-bob-live" : "")}
+            style={t.label ? { animationDelay: `${t.delay}s` } : undefined}
           >
-            {t.label ? (
-              <span className="v1a-tag">
-                <span
-                  className="v1a-tag-dot"
-                  style={{ animationDelay: `${t.delay}s` }}
-                />
-                {t.label}
-              </span>
-            ) : null}
+            <div
+              className={
+                "v1a-tile" +
+                (t.isYou ? " v1a-tile-you" : t.label ? " v1a-tile-agent" : "")
+              }
+            >
+              {t.isYou ? (
+                <span className="v1a-label v1a-label-you">You</span>
+              ) : t.label ? (
+                <span className="v1a-label">
+                  <span className="v1a-label-dot" />
+                  {t.label}
+                </span>
+              ) : null}
+            </div>
           </div>
-        ))}
-      </div>
-      {/* screen-space overlay: keeps the label clear of 3D plane sorting */}
-      <span className="v1a-tag-you" aria-hidden>
-        You
-      </span>
+        </div>
+      ))}
     </div>
   );
 }
