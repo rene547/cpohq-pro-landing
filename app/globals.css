@@ -2,7 +2,9 @@
 
 @theme inline {
   --color-bg: var(--bg);
+  --color-background: var(--bg);
   --color-ink: var(--ink);
+  --color-foreground: var(--ink);
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-card: var(--card);
@@ -212,6 +214,15 @@ body {
 
 .float-slow {
   animation: float-a 7s ease-in-out infinite;
+}
+
+/* ---------- Headline accent (v0) ---------- */
+
+.text-super {
+  background: linear-gradient(92deg, #4f66f0 0%, #8b5cf6 55%, #c95ef0 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 /* ---------- Ribbon (v0 hero artwork) ---------- */
