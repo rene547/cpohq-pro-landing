@@ -11,8 +11,10 @@ import { useEffect, useRef, useState } from "react";
  *   4. the question scrolls up and out; the data tiles + reactions render
  *   5. a CPO reply types in at the bottom; the thread scrolls up, then resets
  *  Port changes vs the source: the loop is gated on useInView because this
- *  section sits below the fold, and the blues are remapped to this site's
- *  accent. Motion drives every move (AnimatePresence + layout). */
+ *  section sits below the fold, the blues are remapped to this site's
+ *  accent, and the stage is tall enough for the WHOLE thread, so the
+ *  question stays pinned through the loop instead of scrolling out.
+ *  Motion drives every move (AnimatePresence + layout). */
 
 const QUESTION = "@Chief of Staff what's the median Series C equity refresh, and how do we compare?";
 const REPLY = "Amazing, thank you 🙏";
@@ -87,15 +89,15 @@ export default function SlackDemoV1() {
   }, [inView]);
 
   const showComposer = phase === "composeQ";
-  const showQ = phase === "sentQ" || phase === "thinking" || phase === "answer";
+  const showQ = ["sentQ", "thinking", "answer", "data", "reactions", "replyTyping", "replySent"].includes(phase);
   const showBot = ["thinking", "answer", "data", "reactions", "replyTyping", "replySent"].includes(phase);
   const showReply = phase === "replyTyping" || phase === "replySent";
   const botAnswer = ["answer", "data", "reactions", "replyTyping", "replySent"].includes(phase);
   const botData = ["data", "reactions", "replyTyping", "replySent"].includes(phase);
   const botReactions = ["reactions", "replyTyping", "replySent"].includes(phase);
 
-  // composer centers in the empty card; reply phases bottom-anchor (thread scrolls up); else top-fill
-  const justify = phase === "composeQ" ? "center" : showReply ? "flex-end" : "flex-start";
+  // composer centers in the empty card; once the thread starts it top-fills and stays put
+  const justify = phase === "composeQ" ? "center" : "flex-start";
   const msgT = { duration: 0.5, ease: EASE, layout: LAYOUT };
 
   return (
