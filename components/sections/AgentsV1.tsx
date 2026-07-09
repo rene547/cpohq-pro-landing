@@ -2,58 +2,62 @@ import { agents } from "@/lib/content-v1";
 import Reveal from "@/components/Reveal";
 
 /* v1 fork of Agents.tsx. Copy is frozen (client: do not change wording);
-   this is a visual pass only. The section sits in a large rounded card:
-   copy on the left, an isometric tile field on the right. The field is one
-   continuous 2D-projected grid (rotate + squash, labels counter-rotated
-   back to level; no preserve-3d), masked at the edges so it reads as a
-   cropped system surface. The blue You tile is the hero at the center and
-   the seven agents sit on its neighboring cells, so the swarm reads as one
-   connected grid. Raised tiles get thickness from an offset slab beneath
-   the face. Motion: halo breathe on You, a faint staggered sheen rippling
-   across the surface, tiny drift on agent tiles, small hover lifts.
-   Reduced-motion goes still. All CSS, still a server component. */
+   the graphic follows the client spec exactly: AgentSwarmIsometric is an
+   iso-stage holding one plane rotated into isometric perspective with
+   rotateX(55deg) rotateZ(-45deg). The plane is deliberately FLAT (no
+   preserve-3d), so it projects to a single 2D matrix: paint order is DOM
+   order and nothing can z-fight. Tiles are absolutely positioned on a
+   5x5 grid in plane space; labels live inside their tiles and apply the
+   exact 2D inverse of the plane projection (rotate(45deg) scaleY(1/cos55))
+   so they render level and crisp and move with their tile. The blue You
+   tile is the hero at the center; seven agents sit on the compass cells
+   around it. CSS keyframes only: pulsing glow on You, gentle float on
+   agents, small hover lifts. Reduced-motion goes still. Server component. */
 
-const GRID = 7;
-const CENTER = 3;
-const SIDE = 15; /* tile side, % of field width (diamond is SIDE * sqrt2) */
-const RATIO = 0.58; /* isometric vertical squash */
-const GAP = 1.02; /* near-touching: the grid reads as one surface */
-const ASPECT = 0.8; /* field height / width */
+const GRID = 5;
+const TILE = 18; /* tile side, % of plane */
+const PITCH = 20; /* cell pitch, % of plane */
+const YOU = { row: 2, col: 2, size: 24 };
 
-/* [row, col, label] -- a full-tile ring around the center: one cell of
-   surface between every agent and You, so labels never crowd
-   (south cell left open so the composition breathes) */
-const AGENT_POS: [number, number, string][] = [
-  [2, 2, "Org"],
-  [1, 3, "Talent"],
-  [2, 4, "Comp"],
-  [3, 5, "Rec"],
-  [5, 3, "Eng"],
-  [4, 2, "L&D"],
-  [3, 1, "Data"],
+/* Client-specified compass layout around the center. Screen directions
+   under rotateX(55deg) rotateZ(-45deg), starting from (r, c):
+   N=(r-1,c+1)  NE=(r,c+1)  E=(r+1,c+1)  SE=(r+1,c)
+   S=(r+1,c-1)  SW=(r,c-1)  W=(r-1,c-1)  (NW left empty) */
+const AGENTS: { row: number; col: number; label: string }[] = [
+  { row: 1, col: 3, label: "Org" } /*    top          */,
+  { row: 2, col: 3, label: "Talent" } /* top-right    */,
+  { row: 3, col: 3, label: "Rec" } /*    right        */,
+  { row: 3, col: 2, label: "Eng" } /*    bottom-right */,
+  { row: 3, col: 1, label: "L&D" } /*    bottom       */,
+  { row: 2, col: 1, label: "Data" } /*   bottom-left  */,
+  { row: 1, col: 1, label: "Comp" } /*   left         */,
 ];
 
-const DIAMOND = SIDE * Math.SQRT2;
+/* center a tile of the given size inside its pitch cell */
+const cellStyle = (row: number, col: number, size = TILE) => ({
+  left: `${col * PITCH + (PITCH - size) / 2}%`,
+  top: `${row * PITCH + (PITCH - size) / 2}%`,
+  width: `${size}%`,
+  height: `${size}%`,
+});
 
-const CELLS = Array.from({ length: GRID * GRID }, (_, i) => {
+/* base cells painted back-to-front (screen depth is row - col); the You
+   tile is appended last so the hero always paints on top */
+const BASE_CELLS = Array.from({ length: GRID * GRID }, (_, i) => {
   const row = Math.floor(i / GRID);
   const col = i % GRID;
-  const agentIdx = AGENT_POS.findIndex(([r, c]) => r === row && c === col);
-  const isYou = row === CENTER && col === CENTER;
+  const agentIdx = AGENTS.findIndex((a) => a.row === row && a.col === col);
   return {
     key: `${row}-${col}`,
-    label: agentIdx >= 0 ? AGENT_POS[agentIdx][2] : null,
-    isYou,
-    x: +(50 + (col - row) * (DIAMOND / 2) * GAP).toFixed(2),
-    y: +(50 + ((row + col - 2 * CENTER) * (DIAMOND * RATIO) * GAP) / 2 / ASPECT).toFixed(2),
-    /* lower rows paint over higher ones; the You tile floats above all */
-    z: isYou ? 40 : (row + col) * 2,
-    /* the sheen ripples diagonally: delay follows the grid diagonal */
-    sheenDelay: +((row + col) * 0.35).toFixed(2),
-    /* de-synced drift so agent tiles never move in lockstep */
-    bobDelay: agentIdx >= 0 ? +(-(agentIdx * 1.4)).toFixed(1) : 0,
+    row,
+    col,
+    label: agentIdx >= 0 ? AGENTS[agentIdx].label : null,
+    /* de-synced float so agent tiles never move in lockstep */
+    delay: agentIdx >= 0 ? +(-(agentIdx * 1.3)).toFixed(1) : 0,
   };
-});
+})
+  .filter((c) => !(c.row === YOU.row && c.col === YOU.col))
+  .sort((a, b) => a.row - a.col - (b.row - b.col) || a.row - b.row);
 
 export default function AgentsV1() {
   return (
@@ -86,7 +90,7 @@ export default function AgentsV1() {
           </Reveal>
 
           <Reveal delay={0.15}>
-            <IsoField />
+            <AgentSwarmIsometric />
           </Reveal>
         </div>
       </div>
@@ -94,54 +98,39 @@ export default function AgentsV1() {
   );
 }
 
-function IsoField() {
+function AgentSwarmIsometric() {
   return (
     <div
-      className="v1a-field"
+      className="v1a-stage"
       role="img"
-      aria-label="A grid of tiles: seven AI agents surrounding one people leader"
+      aria-label="An isometric tile field: seven AI agents arranged around one people leader"
     >
-      <div className="v1a-field-glow" aria-hidden />
-      {CELLS.map((t) => (
-        <div
-          key={t.key}
-          className={"v1a-cell" + (t.isYou ? " v1a-cell-you" : "")}
-          style={{ left: `${t.x}%`, top: `${t.y}%`, zIndex: t.z }}
-        >
-          <div
-            className={"v1a-bob" + (t.label ? " v1a-bob-live" : "")}
-            style={t.label ? { animationDelay: `${t.bobDelay}s` } : undefined}
-          >
-            <div className="v1a-block">
-              {(t.label || t.isYou) && (
-                <div
-                  className={"v1a-depth" + (t.isYou ? " v1a-depth-you" : "")}
-                />
-              )}
-              <div
-                className={
-                  "v1a-tile" +
-                  (t.isYou ? " v1a-tile-you" : t.label ? " v1a-tile-agent" : "")
-                }
-              >
-                {t.isYou ? (
-                  <span className="v1a-label v1a-label-you">You</span>
-                ) : t.label ? (
-                  <span className="v1a-label">
-                    <span className="v1a-label-dot" />
+      <div className="v1a-plane" aria-hidden>
+        {BASE_CELLS.map((t) => (
+          <div key={t.key} className="v1a-cell" style={cellStyle(t.row, t.col)}>
+            {t.label ? (
+              <div className="v1a-float" style={{ animationDelay: `${t.delay}s` }}>
+                <div className="v1a-tile v1a-tile-agent">
+                  <span className="v1a-tag">
+                    <span className="v1a-tag-dot" />
                     {t.label}
                   </span>
-                ) : (
-                  <span
-                    className="v1a-sheen"
-                    style={{ animationDelay: `${t.sheenDelay}s` }}
-                  />
-                )}
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="v1a-tile" />
+            )}
+          </div>
+        ))}
+
+        {/* glow sits under the hero, over the field */}
+        <div className="v1a-you-glow" />
+        <div className="v1a-cell" style={cellStyle(YOU.row, YOU.col, YOU.size)}>
+          <div className="v1a-tile v1a-tile-you">
+            <span className="v1a-tag v1a-tag-you">You</span>
           </div>
         </div>
-      ))}
+      </div>
     </div>
   );
 }

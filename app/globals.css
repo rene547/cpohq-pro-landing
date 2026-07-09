@@ -466,16 +466,20 @@ body {
   overflow: hidden;
 }
 
-/* --- isometric tile field: one continuous 2D-projected grid (rotate +
-       squash, labels counter-rotated back to level, no preserve-3d),
-       masked at the edges so it reads as a cropped system surface.
-       Raised tiles get thickness from an offset slab under the face. --- */
-.v1a-field {
+/* --- AgentSwarmIsometric ---
+   One plane rotated into isometric perspective. The plane is deliberately
+   FLAT (no preserve-3d): it projects to a single 2D matrix, so paint order
+   is DOM order and nothing can z-fight. Under this projection:
+     screen-up    = local (+d, -d)   (hover lifts)
+     screen-down  = local (-d, +d)   (slabs and drop shadows)
+   Labels apply the exact 2D inverse of the projection
+   (rotate(45deg) scaleY(1/cos55deg)) so they render level and crisp. --- */
+.v1a-stage {
   position: relative;
   width: 100%;
   max-width: 34rem;
   margin-inline: auto;
-  aspect-ratio: 100 / 80;
+  aspect-ratio: 10 / 8;
   container-type: inline-size;
   -webkit-mask-image: radial-gradient(
     ellipse 68% 62% at 50% 50%,
@@ -489,148 +493,111 @@ body {
   );
 }
 
-/* faint wash of brand light behind the field */
-.v1a-field-glow {
+.v1a-plane {
   position: absolute;
-  inset: -14%;
-  background: radial-gradient(
-    48% 44% at 50% 48%,
-    rgba(51, 108, 240, 0.09) 0%,
-    transparent 70%
-  );
-  pointer-events: none;
+  left: 50%;
+  top: 50%;
+  width: 88%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%) rotateX(55deg) rotateZ(-45deg);
 }
 
 .v1a-cell {
   position: absolute;
-  width: 15%;
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
 }
 
-.v1a-cell-you {
-  width: 19%;
-}
-
-/* breathing halo under the You tile, on the unskewed cell */
-.v1a-cell-you::before {
-  content: "";
-  position: absolute;
-  inset: -52% -38%;
-  background: radial-gradient(
-    50% 42% at 50% 56%,
-    rgba(51, 108, 240, 0.4) 0%,
-    transparent 70%
-  );
-  filter: blur(7px);
-  animation: v1a-halo 6.5s ease-in-out infinite;
-  pointer-events: none;
-}
-
-.v1a-bob {
+.v1a-float {
   width: 100%;
   height: 100%;
+  animation: v1a-float 9s ease-in-out infinite;
 }
 
-.v1a-bob-live {
-  animation: v1a-bob 10s ease-in-out infinite;
-}
-
-.v1a-block {
+/* base tile: frosted, flush with the plane */
+.v1a-tile {
   position: relative;
   width: 100%;
   height: 100%;
-}
-
-/* the slab: the same diamond offset down in screen space = tile thickness */
-.v1a-depth {
-  position: absolute;
-  inset: 0;
-  border-radius: 18%;
-  transform: translateY(3px) rotate(45deg) scaleY(0.58);
-  background: linear-gradient(150deg, #ccd8e7 0%, #b7c7db 100%);
-}
-
-.v1a-depth-you {
-  transform: translateY(4px) rotate(45deg) scaleY(0.58);
-  background: linear-gradient(150deg, #2a55c4 0%, #16368f 100%);
-}
-
-.v1a-tile {
-  position: absolute;
-  inset: 0;
   display: grid;
   place-items: center;
-  border-radius: 18%;
-  transform: rotate(45deg) scaleY(0.58);
-  background: linear-gradient(150deg, #ffffff 0%, #edf2f9 100%);
+  border-radius: 22%;
+  background: linear-gradient(135deg, #ffffff 0%, #edf2f9 100%);
   box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.95),
     inset 0 0 0 1px color-mix(in srgb, var(--line) 90%, transparent),
-    0 10px 18px -12px rgba(10, 37, 64, 0.28);
+    inset 2px -2px 3px rgba(255, 255, 255, 0.9),
+    -6px 6px 14px -8px rgba(10, 37, 64, 0.25);
   transition:
     transform 0.35s ease,
     box-shadow 0.35s ease;
 }
 
-/* surface tiles acknowledge the cursor with the smallest lift */
 .v1a-tile:hover {
-  transform: translateY(-2px) rotate(45deg) scaleY(0.58);
+  transform: translate(3px, -3px);
 }
 
-/* agent tiles: raised keys on the surface */
+/* agent tiles: white glass keys raised on a slab */
 .v1a-tile-agent {
-  transform: translateY(-4px) rotate(45deg) scaleY(0.58);
-  background: linear-gradient(150deg, #ffffff 0%, #f4f8fd 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f5f9fe 100%);
   box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.95),
-    inset 0 0 0 1px color-mix(in srgb, var(--accent) 18%, var(--line)),
-    0 14px 22px -12px rgba(10, 37, 64, 0.35);
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 20%, var(--line)),
+    inset 2px -2px 3px rgba(255, 255, 255, 0.95),
+    -5px 5px 0 #d3deec,
+    -12px 12px 20px -10px rgba(10, 37, 64, 0.35);
 }
 
-/* the face lifts off its slab, like a key being raised */
 .v1a-tile-agent:hover {
-  transform: translateY(-8px) rotate(45deg) scaleY(0.58);
+  transform: translate(5px, -5px);
   box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.95),
-    inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, var(--line)),
-    0 0 18px color-mix(in srgb, var(--accent) 15%, transparent),
-    0 18px 28px -12px rgba(10, 37, 64, 0.4);
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, var(--line)),
+    inset 2px -2px 3px rgba(255, 255, 255, 0.95),
+    -8px 8px 0 #d3deec,
+    -16px 16px 26px -10px rgba(10, 37, 64, 0.4);
 }
 
-/* the You tile: the one saturated block in the field */
+/* the You tile: blue gradient hero on a dark slab */
 .v1a-tile-you {
-  transform: translateY(-7px) rotate(45deg) scaleY(0.58);
   background: radial-gradient(
-    125% 135% at 32% 22%,
+    130% 130% at 35% 30%,
     #7ba0ff 0%,
     #336cf0 55%,
     #2050c8 100%
   );
   box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.55),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.25),
-    inset 0 -8px 14px rgba(16, 44, 120, 0.3),
-    0 16px 26px -10px rgba(31, 71, 184, 0.5),
-    0 0 34px rgba(51, 108, 240, 0.28);
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+    inset 2px -2px 3px rgba(255, 255, 255, 0.5),
+    -7px 7px 0 #1c3fa8,
+    -14px 14px 26px -8px rgba(31, 71, 184, 0.5);
 }
 
 .v1a-tile-you:hover {
-  transform: translateY(-11px) rotate(45deg) scaleY(0.58);
+  transform: translate(5px, -5px);
   box-shadow:
-    inset 0 1px 2px rgba(255, 255, 255, 0.55),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.25),
-    inset 0 -8px 14px rgba(16, 44, 120, 0.3),
-    0 22px 34px -10px rgba(31, 71, 184, 0.55),
-    0 0 52px rgba(51, 108, 240, 0.38);
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+    inset 2px -2px 3px rgba(255, 255, 255, 0.5),
+    -10px 10px 0 #1c3fa8,
+    -18px 18px 32px -8px rgba(31, 71, 184, 0.55);
 }
 
-/* labels counter-rotate back to level, so text renders unskewed */
-.v1a-label {
+/* pulsing glow under the hero (projected to a soft ground ellipse) */
+.v1a-you-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 68%;
+  height: 68%;
+  transform: translate(-50%, -50%);
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(51, 108, 240, 0.4) 0%, transparent 65%);
+  filter: blur(10px);
+  animation: v1a-pulse 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* labels: exact 2D inverse of the plane projection -> level, unskewed */
+.v1a-tag {
   display: inline-flex;
   align-items: center;
   gap: 0.4em;
-  transform: scaleY(1.7241) rotate(-45deg);
+  transform: rotate(45deg) scaleY(1.7434);
   font-size: clamp(0.68rem, 3cqw, 0.85rem);
   font-weight: 500;
   letter-spacing: 0.01em;
@@ -638,14 +605,14 @@ body {
   white-space: nowrap;
 }
 
-.v1a-label-you {
+.v1a-tag-you {
   font-size: clamp(0.95rem, 4.2cqw, 1.2rem);
   font-weight: 600;
   color: #ffffff;
   text-shadow: 0 1px 6px rgba(16, 44, 120, 0.4);
 }
 
-.v1a-label-dot {
+.v1a-tag-dot {
   width: 0.4em;
   height: 0.4em;
   border-radius: 9999px;
@@ -653,36 +620,14 @@ body {
   box-shadow: 0 0 6px rgba(51, 108, 240, 0.5);
 }
 
-/* a faint sheen ripples diagonally across the surface tiles */
-.v1a-sheen {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(
-    150deg,
-    transparent 32%,
-    rgba(255, 255, 255, 0.9) 50%,
-    transparent 68%
-  );
-  opacity: 0;
-  animation: v1a-sheen 8s ease-in-out infinite;
-  pointer-events: none;
+@keyframes v1a-float {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(2.5px, -2.5px); }
 }
 
-@keyframes v1a-bob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-2.5px); }
-}
-
-@keyframes v1a-halo {
-  0%, 100% { opacity: 0.5; }
+@keyframes v1a-pulse {
+  0%, 100% { opacity: 0.45; }
   50% { opacity: 1; }
-}
-
-@keyframes v1a-sheen {
-  0%, 52%, 100% { opacity: 0; }
-  61% { opacity: 0.45; }
-  70% { opacity: 0; }
 }
 
 /* --- point list --- */
@@ -755,9 +700,8 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .v1a-bob-live,
-  .v1a-cell-you::before,
-  .v1a-sheen {
+  .v1a-float,
+  .v1a-you-glow {
     animation: none;
   }
   .v1a-tile,
@@ -765,14 +709,10 @@ body {
   .v1a-mark {
     transition: none;
   }
-  .v1a-tile:hover {
-    transform: rotate(45deg) scaleY(0.58);
-  }
-  .v1a-tile-agent:hover {
-    transform: translateY(-4px) rotate(45deg) scaleY(0.58);
-  }
+  .v1a-tile:hover,
+  .v1a-tile-agent:hover,
   .v1a-tile-you:hover {
-    transform: translateY(-7px) rotate(45deg) scaleY(0.58);
+    transform: none;
   }
   .v1a-point:hover {
     transform: none;
