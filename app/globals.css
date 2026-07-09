@@ -453,3 +453,271 @@ body {
     animation: none;
   }
 }
+
+/* ---------- v1 agents ---------- */
+
+/* the section lives in one large rounded card */
+.v1a-card {
+  position: relative;
+  border-radius: 28px;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8fc 100%);
+  box-shadow:
+    0 40px 90px -50px rgba(10, 37, 64, 0.28),
+    inset 0 1px 0 #ffffff;
+  padding: clamp(2rem, 5vw, 4.25rem);
+  overflow: hidden;
+}
+
+/* --- AgentSwarmIsometric ---
+   One plane rotated into isometric perspective. The plane is deliberately
+   FLAT (no preserve-3d): it projects to a single 2D matrix, so paint order
+   is DOM order and nothing can z-fight. Under this projection:
+     screen-up    = local (+d, -d)   (hover lifts)
+     screen-down  = local (-d, +d)   (slabs and drop shadows)
+   Labels apply the exact 2D inverse of the projection
+   (rotate(45deg) scaleY(1/cos55deg)) so they render level and crisp. --- */
+.v1a-stage {
+  position: relative;
+  width: 100%;
+  max-width: 34rem;
+  margin-inline: auto;
+  aspect-ratio: 10 / 8;
+  container-type: inline-size;
+  -webkit-mask-image: radial-gradient(
+    ellipse 68% 62% at 50% 50%,
+    #000 55%,
+    transparent 88%
+  );
+  mask-image: radial-gradient(
+    ellipse 68% 62% at 50% 50%,
+    #000 55%,
+    transparent 88%
+  );
+}
+
+.v1a-plane {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 88%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%) rotateX(55deg) rotateZ(-45deg);
+}
+
+.v1a-cell {
+  position: absolute;
+}
+
+.v1a-float {
+  width: 100%;
+  height: 100%;
+  animation: v1a-float 9s ease-in-out infinite;
+}
+
+/* base tile: frosted, flush with the plane */
+.v1a-tile {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  border-radius: 22%;
+  background: linear-gradient(135deg, #ffffff 0%, #edf2f9 100%);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--line) 90%, transparent),
+    inset 2px -2px 3px rgba(255, 255, 255, 0.9),
+    -6px 6px 14px -8px rgba(10, 37, 64, 0.25);
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.v1a-tile:hover {
+  transform: translate(3px, -3px);
+}
+
+/* agent tiles: white glass keys raised on a slab */
+.v1a-tile-agent {
+  background: linear-gradient(135deg, #ffffff 0%, #f5f9fe 100%);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 20%, var(--line)),
+    inset 2px -2px 3px rgba(255, 255, 255, 0.95),
+    -5px 5px 0 #d3deec,
+    -12px 12px 20px -10px rgba(10, 37, 64, 0.35);
+}
+
+.v1a-tile-agent:hover {
+  transform: translate(5px, -5px);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, var(--line)),
+    inset 2px -2px 3px rgba(255, 255, 255, 0.95),
+    -8px 8px 0 #d3deec,
+    -16px 16px 26px -10px rgba(10, 37, 64, 0.4);
+}
+
+/* the You tile: blue gradient hero on a dark slab */
+.v1a-tile-you {
+  background: radial-gradient(
+    130% 130% at 35% 30%,
+    #7ba0ff 0%,
+    #336cf0 55%,
+    #2050c8 100%
+  );
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+    inset 2px -2px 3px rgba(255, 255, 255, 0.5),
+    -7px 7px 0 #1c3fa8,
+    -14px 14px 26px -8px rgba(31, 71, 184, 0.5);
+}
+
+.v1a-tile-you:hover {
+  transform: translate(5px, -5px);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+    inset 2px -2px 3px rgba(255, 255, 255, 0.5),
+    -10px 10px 0 #1c3fa8,
+    -18px 18px 32px -8px rgba(31, 71, 184, 0.55);
+}
+
+/* pulsing glow under the hero (projected to a soft ground ellipse) */
+.v1a-you-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 68%;
+  height: 68%;
+  transform: translate(-50%, -50%);
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(51, 108, 240, 0.4) 0%, transparent 65%);
+  filter: blur(10px);
+  animation: v1a-pulse 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* labels: exact 2D inverse of the plane projection -> level, unskewed */
+.v1a-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  transform: rotate(45deg) scaleY(1.7434);
+  font-size: clamp(0.68rem, 3cqw, 0.85rem);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.v1a-tag-you {
+  font-size: clamp(0.95rem, 4.2cqw, 1.2rem);
+  font-weight: 600;
+  color: #ffffff;
+  text-shadow: 0 1px 6px rgba(16, 44, 120, 0.4);
+}
+
+.v1a-tag-dot {
+  width: 0.4em;
+  height: 0.4em;
+  border-radius: 9999px;
+  background: var(--accent);
+  box-shadow: 0 0 6px rgba(51, 108, 240, 0.5);
+}
+
+@keyframes v1a-float {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(2.5px, -2.5px); }
+}
+
+@keyframes v1a-pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+
+/* --- point list --- */
+.v1a-points {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-width: 30rem;
+}
+
+.v1a-point {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding: 0.85rem 0.9rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  transition:
+    background-color 0.4s ease,
+    border-color 0.4s ease,
+    transform 0.4s ease;
+}
+
+.v1a-point:hover {
+  background: #ffffff;
+  border-color: var(--line);
+  transform: translateX(3px);
+}
+
+.v1a-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  margin-top: 0.15rem;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--accent) 10%, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  transition:
+    background-color 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+.v1a-mark-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--accent) 60%, var(--line));
+  transition: background-color 0.4s ease;
+}
+
+.v1a-point:hover .v1a-mark {
+  background: color-mix(in srgb, var(--accent) 16%, #ffffff);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.v1a-point:hover .v1a-mark-dot {
+  background: var(--accent);
+}
+
+.v1a-point-title {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.v1a-point-line {
+  margin-top: 0.15rem;
+  color: var(--muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v1a-float,
+  .v1a-you-glow {
+    animation: none;
+  }
+  .v1a-tile,
+  .v1a-point,
+  .v1a-mark {
+    transition: none;
+  }
+  .v1a-tile:hover,
+  .v1a-tile-agent:hover,
+  .v1a-tile-you:hover {
+    transform: none;
+  }
+  .v1a-point:hover {
+    transform: none;
+  }
+}
