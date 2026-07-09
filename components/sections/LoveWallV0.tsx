@@ -9,16 +9,25 @@ import Reveal from "@/components/Reveal";
 type Quote = (typeof loveWall.quotes)[number];
 type Photo = (typeof loveWall.photos)[number] & { video?: boolean };
 
-type Item = ({ kind: "quote" } & Quote) | ({ kind: "photo" } & Photo);
+type Item =
+  | ({ kind: "quote" } & Quote)
+  | ({ kind: "photo"; cls: string } & Photo);
 
 const q = (i: number): Item => ({ kind: "quote", ...loveWall.quotes[i] });
-const p = (i: number, video = false): Item => ({ kind: "photo", ...loveWall.photos[i], video });
+const p = (i: number, cls: string, video = false): Item => ({
+  kind: "photo",
+  ...loveWall.photos[i],
+  cls,
+  video,
+});
 
-/* hand-balanced columns: each has at least one flexing photo */
+/* hand-balanced masonry: photos scattered at varied sizes through every
+   column; the flex-1 photo in each column absorbs the height difference so
+   all three columns still end flush */
 const COLUMNS: Item[][] = [
-  [q(0), p(0, true), q(3), q(6)],
-  [q(1), q(4), p(1), q(7), q(9)],
-  [q(2), p(2, true), q(5), q(8)],
+  [q(0), p(0, "h-72", true), q(3), p(3, "flex-1 min-h-[200px]"), q(6)],
+  [p(1, "h-52"), q(1), q(4), q(7), p(4, "flex-1 min-h-[240px]")],
+  [q(2), p(2, "flex-1 min-h-[260px]", true), q(5), q(8), q(9)],
 ];
 
 const cardShadow =
@@ -60,7 +69,7 @@ export default function LoveWallV0() {
                   <div
                     key={i}
                     data-reveal-item
-                    className={`group relative flex-1 min-h-[240px] overflow-hidden rounded-brand border border-line/70 ${cardShadow}`}
+                    className={`group relative overflow-hidden rounded-brand border border-line/70 ${item.cls} ${cardShadow}`}
                   >
                     <Image
                       src={item.src}
