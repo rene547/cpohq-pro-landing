@@ -44,18 +44,17 @@ export const highlights = [
 export const loveWall = {
   headline: "Loved by 1,000s of Chief People Officers.",
   sub: "Notes, clips, and posts from members, unedited.",
-  // Placeholder quotes. Lucas is sending 15 attributed quotes; swap 1:1.
+  /* Real attributed quotes from the vetted testimonial sheet (2026-07-09),
+     display-ready trims. Pillars: Community / Product & AI / Events. */
   quotes: [
-    { q: "CPOHQ is the first Slack I open in the morning and the last one I close.", name: "Placeholder Name", role: "CPO, Series C fintech" },
-    { q: "I asked a comp question at 9am and had four benchmark files by lunch.", name: "Placeholder Name", role: "Chief People Officer, public SaaS" },
-    { q: "The AI chief of staff drafted my board update before I remembered it was due.", name: "Placeholder Name", role: "CPO, healthcare" },
-    { q: "This community is the single highest leverage membership I have.", name: "Placeholder Name", role: "CHRO, enterprise software" },
-    { q: "Nothing else comes close for honest conversations about the hard stuff.", name: "Placeholder Name", role: "CPO, marketplace" },
-    { q: "I have hired three executives through relationships made here.", name: "Placeholder Name", role: "Chief People Officer, AI startup" },
-    { q: "The benchmarks alone paid for themselves in one negotiation.", name: "Placeholder Name", role: "VP People, growth stage" },
-    { q: "It feels like having 3,000 chiefs of staff on call.", name: "Placeholder Name", role: "CPO, consumer" },
-    { q: "Our whole people team runs on the playbooks we found here.", name: "Placeholder Name", role: "CHRO, logistics" },
-    { q: "The summit was the best two days I have spent all year.", name: "Placeholder Name", role: "CPO, developer tools" },
+    { q: "CPOHQ is such a game changer - I tell people about it all the time... I cite it as literally one of the most important tools in my role as Chief People Officer.", name: "Chloe Drew", role: "Chief People Officer, Redox" },
+    { q: "I've spent some time using and really exploring the AI Chief of Staff, and I have to say, it's phenomenal. It's quickly become a tool I can see myself relying on every day.", name: "Laura Florin", role: "Global Head of People Experience, VIDERI" },
+    { q: "ELEVATE is hands down the best conference I've attended in my career!", name: "Vikki Caruso", role: "Chief People Officer, Clearcover" },
+    { q: "This is magical. I can look at this at a glance and understand it 100%.", name: "Tricia Elias", role: "Vantage" },
+    { q: "I've invited so many of my CPO colleagues to this space as it has been the best CPO network I've encountered.", name: "Regina Ross", role: "Chief People Officer, Khan Academy" },
+    { q: "We're picky about our partners and feel lucky to have found a like-minded team in CPOHQ + Knoetic AI - passionate about their craft, committed to their customers' success, and always pushing what's possible. It's been a game changer for us.", name: "Patsy Mangan", role: "Chief People Officer, Scribd" },
+    { q: "What Joseph has built with CPOHQ is rare. It's not just a network. It's a room where people show up honestly - off the record, willing to share what's actually working, what's not, and what they're still figuring out.", name: "Michelle Wagner", role: "Ex-CEO/CPO, Mindstrong" },
+    { q: "After two decades building people functions, I thought I knew what a room full of great People leaders looked like. This redefined it.", name: "Lynee Luque", role: "CPO, NerdWallet" },
   ],
   /* captions/durations are placeholders like the quotes; swap when Lucas
      delivers the Elevate clips */

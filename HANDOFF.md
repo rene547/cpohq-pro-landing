@@ -35,7 +35,7 @@ Full v0 page approved and frozen: Stripe-anatomy hero with Unicorn Studio scene 
 ## What's next
 
 1. Apply incoming client feedback to `/v1` only (fork shared pieces on first touch).
-2. Replace placeholders when Lucas delivers: 15 attributed quotes, curated 50 logos, investor logos + angel headshots, Elevate testimonial clips (love wall photos have hover-to-play affordances staged).
+2. Replace remaining placeholders when Lucas delivers: curated 50 logos, Elevate testimonial clips + real durations/captions (love wall photos have play affordances staged). Love wall quotes are now REAL (8 vetted testimonials in content-v1.ts, 2026-07-09 sheet); investor logos + angel headshots landed in the top bar.
 3. Verify factual claims before any public launch: SOC 2 / ISO 27001 status, "2,400 data points" badge, "#1 platform" and "3,000+" figures.
 
 ## Known constraints / decisions not to revisit

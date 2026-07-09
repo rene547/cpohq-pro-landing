@@ -40,11 +40,12 @@ const p = (i: number, cls: string, video = false): Item => ({
 
 /* hand-balanced masonry: photos scattered at varied sizes through every
    column; the flex-1 photo in each column absorbs the height difference so
-   all three columns still end flush */
+   all three columns still end flush. 8 real quotes, pillars interleaved so
+   no column reads as one topic. */
 const COLUMNS: Item[][] = [
-  [q(0), p(0, "h-72", true), q(3), p(3, "flex-1 min-h-[200px]", true), q(6)],
-  [p(1, "h-52"), q(1), q(4), q(7, true), p(4, "flex-1 min-h-[240px]")],
-  [q(2), p(2, "flex-1 min-h-[260px]", true), q(5), q(8), q(9)],
+  [q(0), p(0, "h-72", true), q(3), p(3, "flex-1 min-h-[200px]", true), q(4)],
+  [p(1, "h-52"), q(1), q(7, true), p(4, "flex-1 min-h-[240px]")],
+  [q(2), p(2, "flex-1 min-h-[260px]", true), q(5), q(6)],
 ];
 
 /* px of drift per column at the section's scroll extremes; zero crossing at
@@ -67,7 +68,7 @@ function QuoteCard({ item, seed }: { item: Extract<Item, { kind: "quote" }>; see
       data-reveal-item
       className={`relative rounded-brand border p-6 ${cardShadow} ${cardHover} ${
         dark
-          ? "bg-dark border-dark text-dark-ink"
+          ? "bg-[#0b0d12] border-[#0b0d12] text-white"
           : "bg-white border-line/70 hover:border-accent/35"
       }`}
     >
@@ -97,7 +98,7 @@ function QuoteCard({ item, seed }: { item: Extract<Item, { kind: "quote" }>; see
         </span>
         <span>
           <span className="block text-sm font-medium">{item.name}</span>
-          <span className={`block text-xs ${dark ? "text-dark-muted" : "text-muted"}`}>
+          <span className={`block text-xs ${dark ? "text-white/55" : "text-muted"}`}>
             {item.role}
           </span>
         </span>
