@@ -23,21 +23,24 @@ export const logoBar = {
   line: "Current and former CPOs from",
 };
 
+/* Rendered copy lives in HighlightCardsV1's CARDS (kept in sync here).
+   Wordmark-lockup test: with the wordmark above the title, card 1 reads
+   "Community"; without it, "CPOHQ Community". Never both. */
 export const highlights = [
   {
     id: "community",
     title: "Community",
-    line: "Confidential conversations with the top 1% of people leaders.",
+    line: "30,000 confidential discussions. Whatever you're facing, a CPO here has already faced it.",
   },
   {
     id: "chief-of-staff",
     title: "AI Chief of Staff",
-    line: "An AI chief of staff that already knows your world.",
+    line: "We built what a top 1% CPO with top 1% AI skills (rare!) and top 1% free time (impossible!) would build for themselves.",
   },
   {
     id: "agents",
     title: "Team of AI agents",
-    line: "A team of AI agents for your entire people org.",
+    line: "An agent on every workflow, from HRBPs to people analytics to L&D.",
   },
 ];
 
