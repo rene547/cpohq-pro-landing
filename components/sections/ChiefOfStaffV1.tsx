@@ -2,53 +2,49 @@ import { chiefOfStaff } from "@/lib/content-v1";
 import Reveal from "@/components/Reveal";
 import AsciiField from "@/components/AsciiField";
 
-/* v0 chief of staff: Bond's "to-do list you've been dreaming of" grammar --
-   big headline + short lead, then alternating text/visual rows. Visuals are
-   black cards carrying the hero's faint ASCII texture (white) with a blue
-   glow rising from the bottom, one product mock per point. */
+/* v1 chief of staff, per client feedback 2026-07-09: mirrors the Community
+   section's grammar -- written content on the left (headline, lead, the
+   three points as a list), visuals on the right as a staggered stack of
+   black ASCII cards (one product mock each, offsets echoing Community). */
+
+const OFFSETS = ["md:mr-14", "md:ml-8 md:mr-4", "md:ml-16"];
 
 export default function ChiefOfStaffV1() {
-  const rows = [
-    { point: chiefOfStaff.points[0], visual: <BriefMock /> },
-    { point: chiefOfStaff.points[1], visual: <DraftMock /> },
-    { point: chiefOfStaff.points[2], visual: <ContextMock /> },
-  ];
+  const visuals = [<BriefMock key="brief" />, <DraftMock key="draft" />, <ContextMock key="context" />];
 
   return (
     <section id={chiefOfStaff.id} className="scroll-mt-16 bg-soft border-y border-line">
-      <div className="mx-auto max-w-[1200px] px-6 py-28">
+      <div className="mx-auto max-w-[1200px] px-6 py-28 grid md:grid-cols-[5fr_7fr] gap-14 items-center">
         <Reveal>
-          <h2 className="font-display text-3xl md:text-5xl tracking-tight max-w-2xl">
+          <h2 className="font-display text-3xl md:text-5xl tracking-tight">
             {chiefOfStaff.headline}
           </h2>
-          <p className="mt-5 text-lg text-muted max-w-xl">{chiefOfStaff.sub}</p>
+          <p className="mt-5 text-lg text-muted max-w-md">{chiefOfStaff.sub}</p>
+          <ul className="mt-10 space-y-6">
+            {chiefOfStaff.points.map((p) => (
+              <li key={p.title} className="border-l-2 border-accent/30 pl-4">
+                <h3 className="font-medium text-lg tracking-tight">{p.title}</h3>
+                <p className="mt-1 text-muted leading-relaxed max-w-sm">{p.line}</p>
+              </li>
+            ))}
+          </ul>
         </Reveal>
 
-        <div className="mt-20 space-y-24">
-          {rows.map(({ point, visual }, i) => (
-            <Reveal key={point.title}>
-              <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
-                <div className={i % 2 ? "md:order-2" : ""}>
-                  <h3 className="font-display text-2xl md:text-3xl tracking-tight">
-                    {point.title}
-                  </h3>
-                  <p className="mt-3 text-muted leading-relaxed max-w-sm">{point.line}</p>
-                </div>
-                <DarkCard order={i % 2 ? "md:order-1" : ""}>{visual}</DarkCard>
-              </div>
-            </Reveal>
+        <Reveal staggerChildren={0.14} className="flex flex-col gap-6">
+          {visuals.map((visual, i) => (
+            <div key={i} data-reveal-item className={OFFSETS[i]}>
+              <DarkCard>{visual}</DarkCard>
+            </div>
           ))}
-        </div>
+        </Reveal>
       </div>
     </section>
   );
 }
 
-function DarkCard({ children, order }: { children: React.ReactNode; order: string }) {
+function DarkCard({ children }: { children: React.ReactNode }) {
   return (
-    <div
-      className={`${order} relative overflow-hidden rounded-[24px] bg-[#0b0d12] min-h-[360px] flex items-center justify-center p-8 shadow-[0_24px_60px_-24px_rgba(11,13,18,0.5)]`}
-    >
+    <div className="relative overflow-hidden rounded-[24px] bg-[#0b0d12] flex items-center justify-center p-6 md:p-7 shadow-[0_24px_60px_-24px_rgba(11,13,18,0.5)]">
       <AsciiField
         className="absolute inset-0 h-full w-full"
         color="255, 255, 255"
