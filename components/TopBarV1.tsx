@@ -13,9 +13,10 @@ const FIRMS: { name: string; file: string; height: string }[] = [
 
 const ANGELS = [
   "adam-grant.jpg",
-  "investor-2.jpg",
-  "lorna-hagen.jpg",
-  "nir-eyal.jpg",
+  "gokul-rajaram.jpg",
+  "pamela-thomas-graham.jpg",
+  "kelli-dragovich.jpg",
+  "marty-reaume.jpg",
 ];
 
 /* brand blue (matches --accent in .theme-v1) */
