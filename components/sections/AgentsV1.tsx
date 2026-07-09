@@ -3,29 +3,34 @@ import Reveal from "@/components/Reveal";
 
 /* v1 fork of Agents.tsx. Copy is frozen (client: do not change wording);
    this is a visual pass only. The section sits in a large rounded card:
-   copy on the left, an isometric tile field on the right. The field is a
-   2D projection (rotate + squash, labels counter-rotated back to level),
-   not preserve-3d, so paint order is deterministic and text stays crisp.
-   Motion is minimal: the blue You tile's halo breathes, agent tiles drift
-   gently, tiles lift a touch on hover. Reduced-motion goes still. All CSS,
-   still a server component. */
+   copy on the left, an isometric tile field on the right. The field is one
+   continuous 2D-projected grid (rotate + squash, labels counter-rotated
+   back to level; no preserve-3d), masked at the edges so it reads as a
+   cropped system surface. The blue You tile is the hero at the center and
+   the seven agents sit on its neighboring cells, so the swarm reads as one
+   connected grid. Raised tiles get thickness from an offset slab beneath
+   the face. Motion: halo breathe on You, a faint staggered sheen rippling
+   across the surface, tiny drift on agent tiles, small hover lifts.
+   Reduced-motion goes still. All CSS, still a server component. */
 
-const GRID = 5;
-const CENTER = 2;
-const SIDE = 13; /* tile side, % of field width (diamond is SIDE * sqrt2) */
+const GRID = 7;
+const CENTER = 3;
+const SIDE = 15; /* tile side, % of field width (diamond is SIDE * sqrt2) */
 const RATIO = 0.58; /* isometric vertical squash */
-const GAP = 1.08; /* spacing factor between tile centers */
-const ASPECT = 0.78; /* field height / width */
+const GAP = 1.02; /* near-touching: the grid reads as one surface */
+const ASPECT = 0.8; /* field height / width */
 
-/* [row, col, label] -- a balanced ring around the center tile */
+/* [row, col, label] -- a full-tile ring around the center: one cell of
+   surface between every agent and You, so labels never crowd
+   (south cell left open so the composition breathes) */
 const AGENT_POS: [number, number, string][] = [
-  [1, 0, "Comp"],
-  [0, 1, "Org"],
-  [0, 3, "Talent"],
-  [3, 0, "Data"],
-  [1, 4, "Rec"],
-  [4, 1, "Eng"],
-  [3, 3, "L&D"],
+  [2, 2, "Org"],
+  [1, 3, "Talent"],
+  [2, 4, "Comp"],
+  [3, 5, "Rec"],
+  [5, 3, "Eng"],
+  [4, 2, "L&D"],
+  [3, 1, "Data"],
 ];
 
 const DIAMOND = SIDE * Math.SQRT2;
@@ -35,7 +40,6 @@ const CELLS = Array.from({ length: GRID * GRID }, (_, i) => {
   const col = i % GRID;
   const agentIdx = AGENT_POS.findIndex(([r, c]) => r === row && c === col);
   const isYou = row === CENTER && col === CENTER;
-  const dist = Math.hypot(row - CENTER, col - CENTER);
   return {
     key: `${row}-${col}`,
     label: agentIdx >= 0 ? AGENT_POS[agentIdx][2] : null,
@@ -43,11 +47,11 @@ const CELLS = Array.from({ length: GRID * GRID }, (_, i) => {
     x: +(50 + (col - row) * (DIAMOND / 2) * GAP).toFixed(2),
     y: +(50 + ((row + col - 2 * CENTER) * (DIAMOND * RATIO) * GAP) / 2 / ASPECT).toFixed(2),
     /* lower rows paint over higher ones; the You tile floats above all */
-    z: isYou ? 10 : row + col,
-    /* empty tiles fade toward the edges of the field */
-    fade: isYou || agentIdx >= 0 ? 1 : +Math.max(0.35, 1 - dist * 0.22).toFixed(2),
+    z: isYou ? 40 : (row + col) * 2,
+    /* the sheen ripples diagonally: delay follows the grid diagonal */
+    sheenDelay: +((row + col) * 0.35).toFixed(2),
     /* de-synced drift so agent tiles never move in lockstep */
-    delay: agentIdx >= 0 ? +(-(agentIdx * 1.2)).toFixed(1) : 0,
+    bobDelay: agentIdx >= 0 ? +(-(agentIdx * 1.4)).toFixed(1) : 0,
   };
 });
 
@@ -95,40 +99,45 @@ function IsoField() {
     <div
       className="v1a-field"
       role="img"
-      aria-label="Seven AI agents arranged around one people leader"
+      aria-label="A grid of tiles: seven AI agents surrounding one people leader"
     >
       <div className="v1a-field-glow" aria-hidden />
       {CELLS.map((t) => (
         <div
           key={t.key}
           className={"v1a-cell" + (t.isYou ? " v1a-cell-you" : "")}
-          style={
-            {
-              left: `${t.x}%`,
-              top: `${t.y}%`,
-              zIndex: t.z,
-              "--fade": t.fade,
-            } as React.CSSProperties
-          }
+          style={{ left: `${t.x}%`, top: `${t.y}%`, zIndex: t.z }}
         >
           <div
             className={"v1a-bob" + (t.label ? " v1a-bob-live" : "")}
-            style={t.label ? { animationDelay: `${t.delay}s` } : undefined}
+            style={t.label ? { animationDelay: `${t.bobDelay}s` } : undefined}
           >
-            <div
-              className={
-                "v1a-tile" +
-                (t.isYou ? " v1a-tile-you" : t.label ? " v1a-tile-agent" : "")
-              }
-            >
-              {t.isYou ? (
-                <span className="v1a-label v1a-label-you">You</span>
-              ) : t.label ? (
-                <span className="v1a-label">
-                  <span className="v1a-label-dot" />
-                  {t.label}
-                </span>
-              ) : null}
+            <div className="v1a-block">
+              {(t.label || t.isYou) && (
+                <div
+                  className={"v1a-depth" + (t.isYou ? " v1a-depth-you" : "")}
+                />
+              )}
+              <div
+                className={
+                  "v1a-tile" +
+                  (t.isYou ? " v1a-tile-you" : t.label ? " v1a-tile-agent" : "")
+                }
+              >
+                {t.isYou ? (
+                  <span className="v1a-label v1a-label-you">You</span>
+                ) : t.label ? (
+                  <span className="v1a-label">
+                    <span className="v1a-label-dot" />
+                    {t.label}
+                  </span>
+                ) : (
+                  <span
+                    className="v1a-sheen"
+                    style={{ animationDelay: `${t.sheenDelay}s` }}
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>
