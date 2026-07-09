@@ -1,4 +1,4 @@
-export type VariantId = "v1" | "v2" | "v3" | "v4" | "v5";
+export type VariantId = "v0" | "v1" | "v2" | "v3" | "v4" | "v5";
 
 export type Variant = {
   id: VariantId;
@@ -19,6 +19,17 @@ export type Variant = {
 };
 
 export const variants: Variant[] = [
+  {
+    id: "v0",
+    name: "Working Direction",
+    note: "The one we build out. V2 base, Stripe hero anatomy, refined piece by piece.",
+    themeClass: "theme-v0",
+    display: "sans",
+    darkCos: true,
+    heroArt: "gradient",
+    logoMarquee: true,
+    altHeadline: false,
+  },
   {
     id: "v1",
     name: "Operating Paper",

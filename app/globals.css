@@ -19,6 +19,28 @@
 
 /* ---------- Variant themes ---------- */
 
+/* v0: the working direction. Cloned from v2 so it can diverge freely. */
+.theme-v0 {
+  --bg: #ffffff;
+  --ink: #0a2540;
+  --muted: #425466;
+  --line: #e6ebf1;
+  --card: #f6f9fc;
+  --soft: #f6f9fc;
+  --accent: #3d53f5;
+  --accent-ink: #ffffff;
+  --dark: #0a2540;
+  --dark-ink: #f6f9fc;
+  --dark-muted: #8ba1b8;
+  --radius: 10px;
+  --display-family: var(--font-geist);
+  --body-family: var(--font-geist);
+  --aura-a: rgba(61, 83, 245, 0.16);
+  --aura-b: rgba(0, 208, 255, 0.12);
+  /* two-tone headline continuation */
+  --headline-tone: #4f66f0;
+}
+
 .theme-v1 {
   --bg: #faf8f4;
   --ink: #17140e;
@@ -190,6 +212,65 @@ body {
 
 .float-slow {
   animation: float-a 7s ease-in-out infinite;
+}
+
+/* ---------- Ribbon (v0 hero artwork) ---------- */
+
+.ribbon-wrap {
+  position: absolute;
+  top: -46%;
+  right: -6%;
+  width: 46%;
+  height: 190%;
+  transform: rotate(30deg);
+  transform-origin: center;
+  pointer-events: none;
+}
+
+.ribbon {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 9999px;
+  filter: blur(22px);
+  will-change: transform;
+}
+
+.ribbon-1 {
+  left: 8%;
+  width: 26%;
+  background: linear-gradient(180deg, #aee6ff 0%, #5f8cff 42%, #6d5ef8 72%, #a95ef0 100%);
+  opacity: 0.9;
+  animation: ribbon-drift 18s ease-in-out infinite;
+}
+
+.ribbon-2 {
+  left: 38%;
+  width: 30%;
+  top: -6%;
+  background: linear-gradient(180deg, #d8f3ff 0%, #7fa4ff 38%, #7c5ef5 68%, #d16ded 100%);
+  opacity: 0.95;
+  animation: ribbon-drift 24s ease-in-out infinite reverse;
+}
+
+.ribbon-3 {
+  left: 72%;
+  width: 22%;
+  top: 8%;
+  background: linear-gradient(180deg, #eaf9ff 0%, #9db9ff 45%, #8f7cf8 78%, #e08bf0 100%);
+  opacity: 0.8;
+  animation: ribbon-drift 30s ease-in-out infinite;
+}
+
+@keyframes ribbon-drift {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -30px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ribbon-1, .ribbon-2, .ribbon-3 {
+    animation: none;
+  }
 }
 
 /* ---------- Form fields ---------- */
