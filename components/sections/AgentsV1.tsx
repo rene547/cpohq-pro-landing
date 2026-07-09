@@ -2,24 +2,41 @@ import { agents } from "@/lib/content-v1";
 import Reveal from "@/components/Reveal";
 
 /* v1 fork of Agents.tsx. Copy is frozen (client: do not change wording);
-   this is a visual uplift only -- the flat constellation became a bespoke
-   agent-swarm: a gradient "You" hub, faint orbit rings, animated tethers,
-   and frosted agent chips that settle and light their tether on hover.
-   Motion stays slow at idle and reacts on hover; reduced-motion goes still. */
+   this is a visual uplift only. The diagram is an isometric tile field:
+   a receding plane of frosted tiles, one glowing brand-blue "You" tile at
+   the center, and seven raised agent tiles around it. Labels stand upright
+   over their tiles. Tiles wake and lift under the cursor; the whole plane
+   leans up slightly on hover. Slow at idle, reacts on hover; reduced-motion
+   goes still. All motion is CSS -- this stays a server component. */
 
-const HUB = { x: 50, y: 50 };
-const RADIUS = 36;
-/* labels mirror the v0 constellation nodes, order preserved */
-const LABELS = ["Comp", "Org", "Talent", "Rec", "Eng", "L&D", "Data"];
+const GRID = 7;
+const CENTER = 3;
 
-const NODES = LABELS.map((label, i) => {
-  const angle = (-90 + i * (360 / LABELS.length)) * (Math.PI / 180);
+/* [row, col, label] -- a loose ring around the center tile */
+const AGENT_POS: [number, number, string][] = [
+  [1, 2, "Comp"],
+  [1, 4, "Org"],
+  [2, 5, "Talent"],
+  [4, 5, "Rec"],
+  [5, 3, "Eng"],
+  [4, 1, "L&D"],
+  [2, 1, "Data"],
+];
+
+const TILES = Array.from({ length: GRID * GRID }, (_, i) => {
+  const row = Math.floor(i / GRID);
+  const col = i % GRID;
+  const agentIdx = AGENT_POS.findIndex(([r, c]) => r === row && c === col);
+  const isYou = row === CENTER && col === CENTER;
+  const dist = Math.hypot(row - CENTER, col - CENTER);
   return {
-    label,
-    x: +(HUB.x + RADIUS * Math.cos(angle)).toFixed(2),
-    y: +(HUB.y + RADIUS * Math.sin(angle)).toFixed(2),
-    /* de-synced idle float so the swarm never pulses in lockstep */
-    delay: +(-(i * 0.9)).toFixed(2),
+    key: `${row}-${col}`,
+    label: agentIdx >= 0 ? AGENT_POS[agentIdx][2] : null,
+    isYou,
+    /* empty tiles fade toward the edges of the field */
+    fade: isYou || agentIdx >= 0 ? 1 : +Math.max(0.4, 1 - dist * 0.13).toFixed(2),
+    /* de-synced idle pulse so the agent dots never blink in lockstep */
+    delay: agentIdx >= 0 ? +(-(agentIdx * 1.3)).toFixed(1) : 0,
   };
 });
 
@@ -32,7 +49,7 @@ export default function AgentsV1() {
       <div className="v1a-aura aura" aria-hidden />
       <div className="relative grid md:grid-cols-2 gap-14 items-center">
         <Reveal className="order-2 md:order-1">
-          <Swarm />
+          <IsoGrid />
         </Reveal>
 
         <Reveal delay={0.1} staggerChildren={0.09} className="order-1 md:order-2">
@@ -64,116 +81,39 @@ export default function AgentsV1() {
   );
 }
 
-function Swarm() {
+function IsoGrid() {
   return (
-    <div className="v1a-swarm">
-      <svg
-        viewBox="0 0 100 100"
-        role="img"
-        aria-label="A swarm of AI agents connected to one people leader"
-        className="v1a-svg"
-      >
-        <defs>
-          <radialGradient id="v1a-hub" cx="42%" cy="36%" r="72%">
-            <stop offset="0%" stopColor="#6f97ff" />
-            <stop offset="55%" stopColor="#336cf0" />
-            <stop offset="100%" stopColor="#1f47b8" />
-          </radialGradient>
-          <filter id="v1a-glow" x="-60%" y="-60%" width="220%" height="220%">
-            <feGaussianBlur stdDeviation="2.4" result="b" />
-            <feMerge>
-              <feMergeNode in="b" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-
-        {/* faint orbit rings */}
-        <circle className="v1a-ring" cx="50" cy="50" r="24" />
-        <circle className="v1a-ring v1a-ring-spin" cx="50" cy="50" r={RADIUS} />
-
-        {/* tethers, drawn under the chips */}
-        {NODES.map((n) => (
-          <line
-            key={`l-${n.label}`}
-            className="v1a-tether"
-            x1={HUB.x}
-            y1={HUB.y}
-            x2={n.x}
-            y2={n.y}
-          />
-        ))}
-
-        {/* central hub */}
-        <g className="v1a-hub" filter="url(#v1a-glow)">
-          <circle cx={HUB.x} cy={HUB.y} r="11" fill="url(#v1a-hub)" />
-          <circle
-            cx={HUB.x}
-            cy={HUB.y}
-            r="11"
-            fill="none"
-            stroke="#ffffff"
-            strokeOpacity="0.35"
-            strokeWidth="0.5"
-          />
-          <text
-            x={HUB.x}
-            y={HUB.y}
-            textAnchor="middle"
-            dominantBaseline="central"
-            fill="#ffffff"
-            fontSize="5"
-            fontWeight={600}
+    <div
+      className="v1a-iso-scene"
+      role="img"
+      aria-label="A grid of tiles: seven AI agents arranged around one people leader"
+    >
+      <div className="v1a-iso-plane" aria-hidden>
+        {TILES.map((t) => (
+          <div
+            key={t.key}
+            className={
+              "v1a-tile" +
+              (t.isYou ? " v1a-tile-you" : t.label ? " v1a-tile-agent" : "")
+            }
+            style={{ "--fade": t.fade } as React.CSSProperties}
           >
-            You
-          </text>
-        </g>
-
-        {/* agent chips */}
-        {NODES.map((n) => (
-          <g key={`n-${n.label}`} className="v1a-node">
-            <line
-              className="v1a-tether v1a-tether-live"
-              x1={HUB.x}
-              y1={HUB.y}
-              x2={n.x}
-              y2={n.y}
-            />
-            <g
-              className="v1a-float"
-              style={{ animationDelay: `${n.delay}s` }}
-            >
-              <g className="v1a-chip">
-                <rect
-                  x={n.x - 9.5}
-                  y={n.y - 4.6}
-                  width="19"
-                  height="9.2"
-                  rx="4.6"
-                  className="v1a-chip-box"
+            {t.label ? (
+              <span className="v1a-tag">
+                <span
+                  className="v1a-tag-dot"
+                  style={{ animationDelay: `${t.delay}s` }}
                 />
-                <circle
-                  className="v1a-chip-dot"
-                  cx={n.x - 5.4}
-                  cy={n.y}
-                  r="1.5"
-                />
-                <text
-                  x={n.x + 1.4}
-                  y={n.y}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  className="v1a-chip-label"
-                  fontSize="4"
-                  fontWeight={500}
-                >
-                  {n.label}
-                </text>
-              </g>
-            </g>
-          </g>
+                {t.label}
+              </span>
+            ) : null}
+          </div>
         ))}
-      </svg>
+      </div>
+      {/* screen-space overlay: keeps the label clear of 3D plane sorting */}
+      <span className="v1a-tag-you" aria-hidden>
+        You
+      </span>
     </div>
   );
 }

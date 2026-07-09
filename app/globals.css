@@ -462,128 +462,174 @@ body {
   pointer-events: none;
 }
 
-/* --- swarm diagram --- */
-.v1a-swarm {
+/* --- isometric agent field --- */
+.v1a-iso-scene {
   position: relative;
   width: 100%;
-  max-width: 27rem;
+  max-width: 30rem;
   margin-inline: auto;
+  aspect-ratio: 10 / 8;
+  perspective: 1200px;
+  container-type: inline-size;
+}
+
+.v1a-iso-plane {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 96%;
   aspect-ratio: 1;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(7, 1fr);
+  gap: 3%;
+  transform: translate(-50%, -50%) rotateX(55deg) rotateZ(-45deg);
+  transform-style: preserve-3d;
+  transition: transform 0.9s ease;
 }
 
-.v1a-svg {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
+/* the whole field leans up gently while the cursor is over it */
+.v1a-iso-scene:hover .v1a-iso-plane {
+  transform: translate(-50%, -50%) rotateX(51deg) rotateZ(-45deg);
 }
 
-.v1a-ring {
-  fill: none;
-  stroke: color-mix(in srgb, var(--accent) 22%, transparent);
-  stroke-width: 0.5;
-  stroke-dasharray: 1 3.5;
+.v1a-tile {
+  position: relative;
+  border-radius: 22%;
+  background: linear-gradient(150deg, #ffffff 0%, #e7eef7 100%);
+  box-shadow:
+    inset 0 2px 2px rgba(255, 255, 255, 0.95),
+    inset 0 0 0 1px var(--line),
+    inset 0 -6px 10px rgba(10, 37, 64, 0.05),
+    0 18px 34px -16px rgba(10, 37, 64, 0.4);
+  opacity: var(--fade, 1);
+  transform-style: preserve-3d;
+  transition:
+    transform 0.45s ease,
+    opacity 0.45s ease,
+    box-shadow 0.45s ease;
 }
 
-.v1a-ring-spin {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: v1a-spin 90s linear infinite;
+/* any tile wakes and lifts under the cursor */
+.v1a-tile:hover {
+  opacity: 1;
+  transform: translateZ(10px);
 }
 
-/* base tethers sit faint under everything */
-.v1a-tether {
-  stroke: var(--accent);
-  stroke-opacity: 0.28;
-  stroke-width: 0.7;
-  stroke-linecap: round;
-  stroke-dasharray: 1 3;
-  animation: v1a-drift 26s linear infinite;
+/* agent tiles sit slightly proud of the field */
+.v1a-tile-agent {
+  background: #ffffff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 24%, var(--line)),
+    0 16px 34px -18px rgba(10, 37, 64, 0.4);
+  transform: translateZ(9px);
 }
 
-/* the per-node "live" tether brightens when its chip is hovered */
-.v1a-tether-live {
-  stroke-opacity: 0;
-  stroke-width: 1.3;
-  stroke-dasharray: none;
-  animation: none;
-  transition: stroke-opacity 0.45s ease;
+.v1a-tile-agent:hover {
+  transform: translateZ(20px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, var(--line)),
+    0 0 24px color-mix(in srgb, var(--accent) 20%, transparent),
+    0 20px 40px -18px rgba(10, 37, 64, 0.45);
 }
 
-.v1a-hub {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: v1a-breathe 11s ease-in-out infinite;
+/* the You tile: the one saturated object in the field */
+.v1a-tile-you {
+  background: radial-gradient(130% 130% at 30% 24%, #6f97ff 0%, #336cf0 52%, #1f47b8 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 0 26px rgba(51, 108, 240, 0.4),
+    0 0 70px rgba(51, 108, 240, 0.22),
+    0 22px 44px -16px rgba(31, 71, 184, 0.5);
+  transform: translateZ(28px) scale(1.32);
 }
 
-.v1a-float {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: v1a-float 8s ease-in-out infinite;
+.v1a-tile-you:hover {
+  transform: translateZ(40px) scale(1.36);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 0 36px rgba(51, 108, 240, 0.55),
+    0 0 100px rgba(51, 108, 240, 0.3),
+    0 28px 52px -16px rgba(31, 71, 184, 0.55);
 }
 
-.v1a-chip {
-  transition: transform 0.4s ease;
+/* breathing halo under the You tile */
+.v1a-tile-you::after {
+  content: "";
+  position: absolute;
+  inset: -45%;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(51, 108, 240, 0.35) 0%, transparent 62%);
+  transform: translateZ(-6px);
+  animation: v1a-halo 9s ease-in-out infinite;
+  pointer-events: none;
 }
 
-.v1a-chip-box {
-  fill: var(--bg);
-  stroke: var(--line);
-  stroke-width: 0.6;
-  filter: drop-shadow(0 0.6px 1.2px rgba(10, 37, 64, 0.14));
-  transition: stroke 0.4s ease;
+/* labels stand upright over their tiles (counter-rotates the plane) */
+.v1a-tag {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  white-space: nowrap;
+  /* counter-rotate the plane, then lift the label so it stands on the
+     tile surface instead of sinking through it */
+  transform: translate(-50%, -50%) rotateZ(45deg) rotateX(-55deg)
+    translateY(-58%);
+  font-size: clamp(0.55rem, 3.4cqw, 0.8rem);
+  font-weight: 500;
+  color: var(--ink);
+  pointer-events: none;
 }
 
-.v1a-chip-dot {
-  fill: color-mix(in srgb, var(--accent) 55%, var(--line));
-  transition: fill 0.4s ease;
-}
-
-.v1a-chip-label {
-  fill: var(--ink);
+/* the You label is a screen-space overlay on the scene, outside the 3D
+   context, so it can never be occluded by plane sorting. Its position
+   tracks the lifted You tile (scene center, nudged up by the lift). */
+.v1a-tag-you {
+  position: absolute;
+  left: 50%;
+  top: calc(50% - 4.5cqw);
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  font-size: clamp(0.85rem, 5cqw, 1.1rem);
+  font-weight: 600;
   letter-spacing: 0.01em;
+  color: #ffffff;
+  text-shadow: 0 1px 10px rgba(31, 71, 184, 0.6);
+  pointer-events: none;
+  transition: top 0.9s ease;
 }
 
-/* hover: the agent settles, its dot lights up, its tether connects */
-.v1a-node {
-  cursor: default;
+/* follow the plane as it leans up on hover */
+.v1a-iso-scene:hover .v1a-tag-you {
+  top: calc(50% - 5.4cqw);
 }
 
-.v1a-node:hover .v1a-float {
-  animation-play-state: paused;
+.v1a-tag-dot {
+  width: 0.42em;
+  height: 0.42em;
+  border-radius: 9999px;
+  background: var(--accent);
+  animation: v1a-dot 7s ease-in-out infinite;
 }
 
-.v1a-node:hover .v1a-chip {
-  transform: translateY(-1.3px);
+.v1a-tile-agent:hover .v1a-tag-dot {
+  animation: none;
+  opacity: 1;
 }
 
-.v1a-node:hover .v1a-chip-box {
-  stroke: var(--accent);
+@keyframes v1a-halo {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
 }
 
-.v1a-node:hover .v1a-chip-dot {
-  fill: var(--accent);
-}
-
-.v1a-node:hover .v1a-tether-live {
-  stroke-opacity: 0.9;
-}
-
-@keyframes v1a-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-1.3px); }
-}
-
-@keyframes v1a-breathe {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.04); }
-}
-
-@keyframes v1a-spin {
-  to { transform: rotate(360deg); }
-}
-
-@keyframes v1a-drift {
-  to { stroke-dashoffset: -80; }
+@keyframes v1a-dot {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
 }
 
 /* --- point list --- */
@@ -656,19 +702,31 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .v1a-ring-spin,
-  .v1a-hub,
-  .v1a-float,
-  .v1a-tether {
+  .v1a-tile-you::after,
+  .v1a-tag-dot {
     animation: none;
   }
-  .v1a-chip,
+  .v1a-iso-plane,
+  .v1a-tile,
+  .v1a-tag-you,
   .v1a-point,
   .v1a-mark {
     transition: none;
   }
-  .v1a-node:hover .v1a-chip {
+  .v1a-iso-scene:hover .v1a-iso-plane {
+    transform: translate(-50%, -50%) rotateX(55deg) rotateZ(-45deg);
+  }
+  .v1a-iso-scene:hover .v1a-tag-you {
+    top: calc(50% - 4.5cqw);
+  }
+  .v1a-tile:hover {
     transform: none;
+  }
+  .v1a-tile-agent:hover {
+    transform: translateZ(9px);
+  }
+  .v1a-tile-you:hover {
+    transform: translateZ(28px) scale(1.32);
   }
   .v1a-point:hover {
     transform: none;
