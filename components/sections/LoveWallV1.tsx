@@ -5,14 +5,14 @@ import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { GradientAvatar } from "@outpacelabs/avatars";
 import { loveWall } from "@/lib/content-v1";
 import Reveal from "@/components/Reveal";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 /* v1 love wall, upgraded per client feedback 2026-07-09: quote cards carry
-   gradient avatars, an accent quote mark, and a hover lift; one featured
+   member headshots (black initials circle when none is on file), an accent
+   quote mark, and a hover lift; one featured
    quote goes dark navy for contrast; photo cards read as real clip
    thumbnails (center play, duration chip, caption scrim); and the three
    columns drift at slightly different rates while scrolling (scrub-driven,
@@ -61,7 +61,7 @@ function initials(name: string) {
   return name.split(" ").map((w) => w[0]).join("");
 }
 
-function QuoteCard({ item, seed }: { item: Extract<Item, { kind: "quote" }>; seed: string }) {
+function QuoteCard({ item }: { item: Extract<Item, { kind: "quote" }> }) {
   const dark = item.featured;
   return (
     <figure
@@ -91,10 +91,14 @@ function QuoteCard({ item, seed }: { item: Extract<Item, { kind: "quote" }>; see
       </blockquote>
       <figcaption className="mt-5 flex items-center gap-3">
         <span className="relative size-9 shrink-0 overflow-hidden rounded-full">
-          <GradientAvatar seed={seed} size={36} />
-          <span className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-white/95">
-            {initials(item.name)}
-          </span>
+          {item.avatar ? (
+            <Image src={item.avatar} alt="" fill sizes="36px" className="object-cover" />
+          ) : (
+            /* no headshot on file: plain black initials circle */
+            <span className="absolute inset-0 flex items-center justify-center bg-[#0b0d12] text-[10px] font-semibold text-white/95">
+              {initials(item.name)}
+            </span>
+          )}
         </span>
         <span>
           <span className="block text-sm font-medium">{item.name}</span>
@@ -249,7 +253,7 @@ export default function LoveWallV1() {
             >
               {column.map((item, i) =>
                 item.kind === "quote" ? (
-                  <QuoteCard key={i} item={item} seed={`cpohq-${ci}-${i}-${item.role}`} />
+                  <QuoteCard key={i} item={item} />
                 ) : (
                   <ClipCard key={i} item={item} />
                 )

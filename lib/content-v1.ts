@@ -46,15 +46,16 @@ export const loveWall = {
   sub: "Notes, clips, and posts from members, unedited.",
   /* Real attributed quotes from the vetted testimonial sheet (2026-07-09),
      display-ready trims. Pillars: Community / Product & AI / Events. */
+  /* avatar "" renders a plain black initials circle (no headshot on file) */
   quotes: [
-    { q: "CPOHQ is such a game changer - I tell people about it all the time... I cite it as literally one of the most important tools in my role as Chief People Officer.", name: "Chloe Drew", role: "Chief People Officer, Redox" },
-    { q: "I've spent some time using and really exploring the AI Chief of Staff, and I have to say, it's phenomenal. It's quickly become a tool I can see myself relying on every day.", name: "Laura Florin", role: "Global Head of People Experience, VIDERI" },
-    { q: "ELEVATE is hands down the best conference I've attended in my career!", name: "Vikki Caruso", role: "Chief People Officer, Clearcover" },
-    { q: "This is magical. I can look at this at a glance and understand it 100%.", name: "Tricia Elias", role: "Vantage" },
-    { q: "I've invited so many of my CPO colleagues to this space as it has been the best CPO network I've encountered.", name: "Regina Ross", role: "Chief People Officer, Khan Academy" },
-    { q: "We're picky about our partners and feel lucky to have found a like-minded team in CPOHQ + Knoetic AI - passionate about their craft, committed to their customers' success, and always pushing what's possible. It's been a game changer for us.", name: "Patsy Mangan", role: "Chief People Officer, Scribd" },
-    { q: "What Joseph has built with CPOHQ is rare. It's not just a network. It's a room where people show up honestly - off the record, willing to share what's actually working, what's not, and what they're still figuring out.", name: "Michelle Wagner", role: "Ex-CEO/CPO, Mindstrong" },
-    { q: "After two decades building people functions, I thought I knew what a room full of great People leaders looked like. This redefined it.", name: "Lynee Luque", role: "CPO, NerdWallet" },
+    { q: "CPOHQ is such a game changer - I tell people about it all the time... I cite it as literally one of the most important tools in my role as Chief People Officer.", name: "Chloe Drew", role: "Chief People Officer, Redox", avatar: "/photos/people/chloe-drew.jpg" },
+    { q: "I've spent some time using and really exploring the AI Chief of Staff, and I have to say, it's phenomenal. It's quickly become a tool I can see myself relying on every day.", name: "Laura Florin", role: "Global Head of People Experience, VIDERI", avatar: "/photos/people/laura-florin.jpg" },
+    { q: "ELEVATE is hands down the best conference I've attended in my career!", name: "Vikki Caruso", role: "Chief People Officer, Clearcover", avatar: "/photos/people/vikki-caruso.jpg" },
+    { q: "This is magical. I can look at this at a glance and understand it 100%.", name: "Tricia Elias", role: "Vantage", avatar: "" },
+    { q: "I've invited so many of my CPO colleagues to this space as it has been the best CPO network I've encountered.", name: "Regina Ross", role: "Chief People Officer, Khan Academy", avatar: "/photos/people/regina-ross.jpg" },
+    { q: "We're picky about our partners and feel lucky to have found a like-minded team in CPOHQ + Knoetic AI - passionate about their craft, committed to their customers' success, and always pushing what's possible. It's been a game changer for us.", name: "Patsy Mangan", role: "Chief People Officer, Scribd", avatar: "/photos/people/patsy-mangan.jpg" },
+    { q: "What Joseph has built with CPOHQ is rare. It's not just a network. It's a room where people show up honestly - off the record, willing to share what's actually working, what's not, and what they're still figuring out.", name: "Michelle Wagner", role: "Ex-CEO/CPO, Mindstrong", avatar: "/photos/people/michelle-wagner.jpg" },
+    { q: "After two decades building people functions, I thought I knew what a room full of great People leaders looked like. This redefined it.", name: "Lynee Luque", role: "CPO, NerdWallet", avatar: "/photos/people/lynee-luque.jpg" },
   ],
   /* captions/durations are placeholders like the quotes; swap when Lucas
      delivers the Elevate clips */
@@ -156,6 +157,102 @@ export const talkToUs = {
     { label: "Talk to a founder", href: "#" },
     { label: "Get a demo for your team", href: "#" },
   ],
+};
+
+/* ---------- v1 apply form ----------
+   Field set mirrors the live cpohq.com application form 1:1 so the wiring
+   phase can map straight onto the existing pipeline. Do not rename keys. */
+
+export const applyForm = {
+  title: "Apply to join CPOHQ.",
+  sub: "Membership is by invitation only, so we'd love to learn more about you and why you're interested in joining.",
+  steps: [
+    { id: "about", label: "About you" },
+    { id: "role", label: "Your role" },
+    { id: "systems", label: "Your systems" },
+  ],
+  fields: {
+    firstName: "First name",
+    lastName: "Last name",
+    workEmail: "Work email",
+    personalEmail: "Personal email (just in case)",
+    linkedinUrl: "Your LinkedIn profile URL",
+    activeCpo: "I am currently an active, full-time CPO",
+    professionalLevel: "What is your professional level?",
+    reportingLevels:
+      "How many reporting levels are between you and the CEO of your organization?",
+    hris: "Which HRIS does your company use?",
+    ats: "Which ATS does your company use?",
+  },
+  selectPlaceholder: "Please select",
+  multiHint: "Select all that apply.",
+  professionalLevels: ["C-Level", "SVP", "VP", "Director", "Other"],
+  reportingLevelOptions: [
+    "1 (I report directly to the CEO)",
+    "2 (I report to someone who reports directly to the CEO)",
+    "3 or more",
+  ],
+  hrisOptions: [
+    "ADP Workforce Now",
+    "BambooHR",
+    "Ceridian Dayforce",
+    "Deel",
+    "Gusto",
+    "HiBob",
+    "Justworks",
+    "Namely",
+    "Oracle Cloud HCM",
+    "Paychex",
+    "Paycor",
+    "Paylocity",
+    "Personio",
+    "Rippling",
+    "SageHR",
+    "SAP SuccessFactors",
+    "UKG",
+    "Workday",
+    "Other",
+    "None",
+  ],
+  atsOptions: [
+    "Greenhouse",
+    "Ashby",
+    "Lever",
+    "SmartRecruiters",
+    "Workday Recruiting",
+    "iCIMS Talent Cloud",
+    "Oracle Recruiting",
+    "SAP Recruiting",
+    "Workable",
+    "JazzHR",
+    "BreezyHR",
+    "Jobvite",
+    "Other",
+    "None",
+  ],
+  back: "Back",
+  next: "Continue",
+  submit: "Submit application",
+  consent: {
+    before: "By applying to CPOHQ, you are agreeing to our ",
+    privacyLabel: "Privacy Policy",
+    privacyHref: "#",
+    between: " and ",
+    termsLabel: "Terms of Use",
+    termsHref: "#",
+    after: ".",
+  },
+  errors: {
+    required: "Please complete this required field.",
+    email: "Please enter a valid email address.",
+    linkedin: "Please enter a LinkedIn profile URL.",
+    selectOne: "Please select at least one option.",
+  },
+  success: {
+    title: "Application received.",
+    line: "Thanks for applying to CPOHQ. Every application is reviewed, and we'll be in touch soon.",
+    close: "Done",
+  },
 };
 
 export const footer = {
