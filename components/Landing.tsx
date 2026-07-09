@@ -9,6 +9,7 @@ import HeroV0 from "@/components/sections/HeroV0";
 import { ShellNavbar } from "@/components/ShellNavbar";
 import LogoBar from "@/components/sections/LogoBar";
 import Highlights from "@/components/sections/Highlights";
+import HighlightCardsV0 from "@/components/sections/HighlightCardsV0";
 import LoveWall from "@/components/sections/LoveWall";
 import Community from "@/components/sections/Community";
 import ChiefOfStaff from "@/components/sections/ChiefOfStaff";
@@ -62,7 +63,7 @@ export default function Landing({ variant }: { variant: Variant }) {
         </>
       )}
       <LogoBar variant={variant} />
-      <Highlights />
+      {variant.id === "v0" ? <HighlightCardsV0 /> : <Highlights />}
       <LoveWall />
       <Community />
       <ChiefOfStaff variant={variant} />

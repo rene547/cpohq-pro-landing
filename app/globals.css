@@ -299,6 +299,78 @@ body {
   }
 }
 
+/* ---------- Chief-of-staff orb (v0 highlight card) ---------- */
+
+.cos-orb {
+  position: relative;
+  width: 190px;
+  height: 190px;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 38% 32%, #eaf2ff 0%, #6f9aff 28%, #336cf0 58%, #1f3fae 100%);
+  box-shadow:
+    0 0 60px rgba(51, 108, 240, 0.4),
+    0 0 140px rgba(51, 108, 240, 0.22),
+    inset 0 -18px 40px rgba(10, 37, 64, 0.35),
+    inset 0 14px 30px rgba(255, 255, 255, 0.55);
+  transition: box-shadow 0.6s ease;
+  animation: orb-breathe 10s ease-in-out infinite;
+}
+
+.cos-orb-sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(255, 255, 255, 0.3) 40deg, transparent 110deg);
+  mix-blend-mode: screen;
+  animation: orb-spin 26s linear infinite;
+}
+
+.cos-orb-ring {
+  position: absolute;
+  inset: -28px;
+  border-radius: 9999px;
+  border: 1px dashed rgba(51, 108, 240, 0.3);
+  transition: border-color 0.6s ease;
+  animation: orb-spin-rev 48s linear infinite;
+}
+
+.group:hover .cos-orb {
+  box-shadow:
+    0 0 90px rgba(51, 108, 240, 0.55),
+    0 0 210px rgba(51, 108, 240, 0.32),
+    inset 0 -18px 40px rgba(10, 37, 64, 0.35),
+    inset 0 14px 30px rgba(255, 255, 255, 0.6);
+  animation-duration: 4.5s;
+}
+
+.group:hover .cos-orb-sheen {
+  animation-duration: 9s;
+}
+
+.group:hover .cos-orb-ring {
+  border-color: rgba(51, 108, 240, 0.5);
+  animation-duration: 16s;
+}
+
+@keyframes orb-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.045); }
+}
+
+@keyframes orb-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes orb-spin-rev {
+  to { transform: rotate(-360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cos-orb, .cos-orb-sheen, .cos-orb-ring {
+    animation: none;
+  }
+}
+
 /* ---------- Form fields ---------- */
 
 .modal-field {
