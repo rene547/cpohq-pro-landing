@@ -58,12 +58,13 @@ export const loveWall = {
   ],
   /* captions/durations are placeholders like the quotes; swap when Lucas
      delivers the Elevate clips */
+  /* videoSrc plays muted on hover (photo stays as the idle poster) */
   photos: [
-    { src: "/photos/summit-passion.jpg", alt: "Speaker on stage at a CPOHQ summit", caption: "Summit keynote", duration: "0:38" },
-    { src: "/photos/summit-hoodies.jpg", alt: "Members at Summit II, The Timeless and the Timely", caption: "Summit II floor", duration: "" },
-    { src: "/photos/summit-panel.jpg", alt: "Panel on AI and the organization of 2030", caption: "The organization of 2030", duration: "1:12" },
-    { src: "/photos/summit-welcoming.jpg", alt: "Founder welcoming members on stage", caption: "Opening welcome", duration: "0:29" },
-    { src: "/photos/summit-joseph-mic.jpg", alt: "Session at a CPOHQ summit", caption: "Member Q&A", duration: "" },
+    { src: "/photos/summit-passion.jpg", alt: "Speaker on stage at a CPOHQ summit", caption: "Summit keynote", duration: "0:38", videoSrc: "" },
+    { src: "/photos/summit-hoodies.jpg", alt: "Members at Summit II, The Timeless and the Timely", caption: "Summit II floor", duration: "", videoSrc: "" },
+    { src: "/photos/summit-panel.jpg", alt: "Panel on AI and the organization of 2030", caption: "The organization of 2030", duration: "0:10", videoSrc: "/videos/organization-of-2030.mp4" },
+    { src: "/photos/summit-welcoming.jpg", alt: "Founder welcoming members on stage", caption: "Opening welcome", duration: "0:10", videoSrc: "/videos/opening-welcome.mp4" },
+    { src: "/photos/summit-joseph-mic.jpg", alt: "Session at a CPOHQ summit", caption: "Member Q&A", duration: "", videoSrc: "" },
   ],
 };
 

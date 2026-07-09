@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -108,9 +108,28 @@ function QuoteCard({ item, seed }: { item: Extract<Item, { kind: "quote" }>; see
 }
 
 function ClipCard({ item }: { item: Extract<Item, { kind: "photo" }> }) {
+  const vidRef = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
+
+  /* hover-to-play: muted clip fades in over the poster photo and loops;
+     leaving pauses it. Reduced motion keeps the static poster. */
+  const enter = () => {
+    const v = vidRef.current;
+    if (!v || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    v.currentTime = 0;
+    setPlaying(true);
+    v.play().catch(() => setPlaying(false));
+  };
+  const leave = () => {
+    vidRef.current?.pause();
+    setPlaying(false);
+  };
+
   return (
     <div
       data-reveal-item
+      onMouseEnter={item.videoSrc ? enter : undefined}
+      onMouseLeave={item.videoSrc ? leave : undefined}
       className={`group relative overflow-hidden rounded-brand border border-line/70 ${item.cls} ${cardShadow} ${cardHover}`}
     >
       <Image
@@ -120,6 +139,20 @@ function ClipCard({ item }: { item: Extract<Item, { kind: "photo" }> }) {
         sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
         className="object-cover transition duration-700 group-hover:scale-[1.045]"
       />
+      {item.videoSrc && (
+        <video
+          ref={vidRef}
+          src={item.videoSrc}
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          aria-hidden
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
+            playing ? "opacity-100" : "opacity-0"
+          }`}
+        />
+      )}
       <div
         aria-hidden
         className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/60 via-black/25 to-transparent"
@@ -135,7 +168,12 @@ function ClipCard({ item }: { item: Extract<Item, { kind: "photo" }> }) {
         )}
       </div>
       {item.video && (
-        <span className="absolute inset-0 flex items-center justify-center" aria-hidden>
+        <span
+          className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
+            playing ? "opacity-0" : "opacity-100"
+          }`}
+          aria-hidden
+        >
           <span className="flex size-12 items-center justify-center rounded-full bg-white/85 text-ink shadow-lg backdrop-blur transition duration-300 group-hover:scale-110 group-hover:bg-white">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
               <path d="M3.5 2v10l8.5-5-8.5-5z" />
